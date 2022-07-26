@@ -67,7 +67,7 @@ const requestListener = (req, res) => {
 				from: process.env.MAIL_ADDR,
 				to: sendOpt.to,
 				subject: process.env.MAIL_SUBJ,
-				html: sendOpt.html
+				html: process.env.MAIL_HEADER + sendOpt.html
 			};
 			transporter.sendMail(mailOptions, (err, info) => {
 				if (err) {
