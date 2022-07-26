@@ -1,0 +1,23 @@
+{
+  "name": "v-7.2.0",
+  "version": "1.0.0",
+  "description": "ayudante test 2 ",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon -e json server.js"
+  },
+  "keywords": [
+    "http-module",
+    "nodejs-server",
+    "cors"
+  ],
+  "author": "Tezcatlipoca",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.16"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.1",
+    "nodemailer": "^6.7.7"
+  }
+}
