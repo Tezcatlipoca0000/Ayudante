@@ -72,6 +72,7 @@ const requestListener = (req, res) => {
 			transporter.sendMail(mailOptions, (err, info) => {
 				if (err) {
 					console.log(err);
+					res.send('<p>hubo un errorrrr</p>')
 				} else {
 					console.log(`Email sent: ${info.response}`);
 				}

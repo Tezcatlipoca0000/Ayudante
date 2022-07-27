@@ -250,3 +250,6 @@ body {
 	font-size: 18px;
 }
 
+.invisible {
+	display: none;
+}

@@ -537,9 +537,9 @@ const hist = {
 		add.el('th', '#logTable thead tr', 'Total');
 		for (let [i, n] of cant.entries()) {
 			add.el('tr', '#logTable tbody', '', [['id', `logTr${i}`]]);
-			add.el('td', `#logTr${i}`, prod[i], [['class', 'noteditable']]);
-			add.el('td', `#logTr${i}`, n, [['class', 'noteditable']]);
-			add.el('td', `#logTr${i}`, tot[i], [['class', 'noteditable']]);
+			add.el('td', `#logTr${i}`, prod[i], [['class', 'noteditable'], ['data-col', 'producto']]); 
+			add.el('td', `#logTr${i}`, n, [['class', 'noteditable'], ['data-col', 'pedido']]); 
+			add.el('td', `#logTr${i}`, tot[i], [['class', 'noteditable'], ['data-col', 'total']]); 
 		}
 		add.el('tr', '#logTable tfoot');
 		add.el('td', '#logTable tfoot tr', 'Total');
@@ -560,16 +560,25 @@ const hist = {
 			tbl = document.querySelector('.menu .table'),
 			xhr = new XMLHttpRequest(),
 			url = 'http://localhost:8000/send';
+		add.el('div', 'body', null, [['class', 'invisible']]);
+		add.el('table', '.invisible', null, [['id', 'sendTbl']]);
+		for (let i = 0; i < tbl.rows.length - 1; i++) {
+			add.el('tr', '#sendTbl', '', [['id', `sendtr${i}`]]);
+			add.el('td', `#sendtr${i}`, tbl.rows[i].cells[0].innerText);
+			add.el('td', `#sendtr${i}`, tbl.rows[i].cells[1].innerText);
+		}
 		xhr.open('POST', url);
 		xhr.setRequestHeader('Content-Type', 'application/json');
 		add.listener(xhr, [['error', hist.postErr], ['load', hist.postSuccess]]);
-		xhr.send(JSON.stringify({to: addr, html: tbl.outerHTML}));
+		xhr.send(JSON.stringify({to: addr, html: document.querySelector('#sendTbl').outerHTML}));
+		add.cancel('.invisible');
 	},
-	postErr: () => {
-		console.log('hist postErr');
+	postErr: (err) => {
+		alert('Ocurrió un error y no se envió el pedido');
+		console.log('error >>>', err);
 	},
 	postSuccess: () => {
-		console.log('hist postSuccess');
+		alert('Se envió el pedido éxitosamente');
 	},
 };
 
