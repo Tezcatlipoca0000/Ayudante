@@ -1,7 +1,7 @@
 {
   "name": "v-7.2.0",
   "version": "1.0.0",
-  "description": "ayudante test 2 ",
+  "description": "A tool for a little shop/store",
   "main": "server.js",
   "scripts": {
     "start": "nodemon -e json server.js"

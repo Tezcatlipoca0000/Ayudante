@@ -560,6 +560,7 @@ const hist = {
 			tbl = document.querySelector('.menu .table'),
 			url = 'http://localhost:8000/send';
 		add.el('div', 'body', null, [['class', 'invisible']]);
+		// make a table to send that excludes total row and col
 		add.el('table', '.invisible', null, [['id', 'sendTbl']]);
 		for (let i = 0; i < tbl.rows.length - 1; i++) {
 			add.el('tr', '#sendTbl', '', [['id', `sendtr${i}`]]);
@@ -588,23 +589,6 @@ const hist = {
 			console.error('There was an error making the connection to the server: ', err);
 			alert('Hubo un error estableciendo la conexión con el servidor. Porfavor vuelva a intentarlo.');
 		});
-
-		/*let addr = document.querySelector('#histSendGrid input').value,
-			tbl = document.querySelector('.menu .table'),
-			xhr = new XMLHttpRequest(),
-			url = 'http://localhost:8000/send';
-		add.el('div', 'body', null, [['class', 'invisible']]);
-		add.el('table', '.invisible', null, [['id', 'sendTbl']]);
-		for (let i = 0; i < tbl.rows.length - 1; i++) {
-			add.el('tr', '#sendTbl', '', [['id', `sendtr${i}`]]);
-			add.el('td', `#sendtr${i}`, tbl.rows[i].cells[0].innerText);
-			add.el('td', `#sendtr${i}`, tbl.rows[i].cells[1].innerText);
-		}
-		add.listener(xhr, [['error', hist.postErr], ['loadend', hist.postSuccess]]);
-
-		xhr.open('POST', url, true);
-		xhr.setRequestHeader('Content-Type', 'application/json');
-		xhr.send(JSON.stringify({to: addr, html: document.querySelector('#sendTbl').outerHTML}));*/
 		add.cancel('.invisible');
 	},
 	postErr: (err) => {
@@ -1183,9 +1167,9 @@ const connect = {
 const standBy = {
 	'display': () => {
 		window.scrollTo(0,0);
-		add.el('div', 'body', '', [['class', 'standBy']]);
+		add.el('div', 'body', null, [['class', 'standBy']]);
 		add.el('span', '.standBy', 'Conectando ');
-		add.el('i', '.standBy', '', [['class', 'spinner']]);
+		add.el('i', '.standBy', null, [['class', 'spinner']]);
 		connect.server();
 	},
 };
@@ -1197,7 +1181,7 @@ add.listener(document,
 		['DOMContentLoaded', standBy.display],
 		['click', (evt) => {
 			// ALL >>>> add .selected to td
-			let td = document.querySelector('td[contenteditable]');
+			let td = evt.target.closest('td[contenteditable]');
 			if (td) {
 				let sel = document.querySelector('.selected');
 				if (sel) sel.classList.remove('selected');
@@ -1318,5 +1302,3 @@ add.listener(document,
 			}
 		}],
 	]);
-
-// timeout /t 240 /nobreak

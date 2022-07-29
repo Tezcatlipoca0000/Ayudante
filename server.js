@@ -42,6 +42,7 @@ const requestListener = (req, res) => {
 		res.end(data);
 		return;
 	} else if (req.method === 'POST' && req.url === '/') {
+		// TODO: write an err handling like on '/send'
 		res.writeHead(200, headers);
 		let body = [];
 		req.on('data', d =>{
