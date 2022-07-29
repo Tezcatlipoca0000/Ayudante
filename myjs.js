@@ -554,7 +554,7 @@ const hist = {
 		add.el('button', '#histSendFlex', 'Cancelar', '', [['click', () => add.cancel('#histSendMenu')]]);
 		add.el('button', '#histSendFlex', 'Enviar', [['type', 'button']], [['click', hist.send]]);
 	},
-	// send pedido to provider using mailto
+	// send pedido to provider using nodemailer
 	send: () => {
 		let addr = document.querySelector('#histSendGrid input').value,
 			tbl = document.querySelector('.menu .table'),
@@ -575,13 +575,13 @@ const hist = {
 			referrerPolicy: 'no-referrer',
 			body: JSON.stringify({to: addr, html: document.querySelector('#sendTbl').outerHTML}),
 		})
-		.then((response) => response.json())
-		.then((data) => {
+		.then(response => response.json())
+		.then(data => {
 			console.log("Here's the server's response: ", data);
 			if (data.error) {
 				alert('Hubo un error y NO se envió la información. Porfavor vuelva a intentarlo.')
 			} else {
-				alert('Se envió la información éxitosamente!');
+				alert('¡Se envió la información éxitosamente!');
 				add.cancel('#histSendMenu')
 			}
 		})
@@ -590,26 +590,6 @@ const hist = {
 			alert('Hubo un error estableciendo la conexión con el servidor. Porfavor vuelva a intentarlo.');
 		});
 		add.cancel('.invisible');
-	},
-	postErr: (err) => {
-		alert('Ocurrió un error con la conexión');
-		console.log('error >>>', err);
-	},
-	postSuccess: (evt) => {
-		console.log(evt);
-		// evt.target.readyState
-		let rdySt = evt.target.readyState;
-		if (rdySt === XMLHttpRequest.DONE) {
-			const status = evt.target.status;
-			if (status === 0 || (status >= 200 && status < 400)) {
-				console.log(evt.target.responseText);
-			} else {
-				console.log('something went wrong with the request');
-				console.log('response.status >>>', evt.target.status);
-				console.log('responseText >>>', evt.target.responseText);
-			}
-		}
-		//alert('Se envió el pedido éxitosamente');
 	},
 };
 
