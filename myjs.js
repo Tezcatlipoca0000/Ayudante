@@ -558,6 +558,39 @@ const hist = {
 	send: () => {
 		let addr = document.querySelector('#histSendGrid input').value,
 			tbl = document.querySelector('.menu .table'),
+			url = 'http://localhost:8000/send';
+		add.el('div', 'body', null, [['class', 'invisible']]);
+		add.el('table', '.invisible', null, [['id', 'sendTbl']]);
+		for (let i = 0; i < tbl.rows.length - 1; i++) {
+			add.el('tr', '#sendTbl', '', [['id', `sendtr${i}`]]);
+			add.el('td', `#sendtr${i}`, tbl.rows[i].cells[0].innerText);
+			add.el('td', `#sendtr${i}`, tbl.rows[i].cells[1].innerText);
+		}
+		fetch(url, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			referrerPolicy: 'no-referrer',
+			body: JSON.stringify({to: addr, html: document.querySelector('#sendTbl').outerHTML}),
+		})
+		.then((response) => response.json())
+		.then((data) => {
+			console.log("Here's the server's response: ", data);
+			if (data.error) {
+				alert('Hubo un error y NO se envió la información. Porfavor vuelva a intentarlo.')
+			} else {
+				alert('Se envió la información éxitosamente!');
+				add.cancel('#histSendMenu')
+			}
+		})
+		.catch((err) => {
+			console.error('There was an error making the connection to the server: ', err);
+			alert('Hubo un error estableciendo la conexión con el servidor. Porfavor vuelva a intentarlo.');
+		});
+
+		/*let addr = document.querySelector('#histSendGrid input').value,
+			tbl = document.querySelector('.menu .table'),
 			xhr = new XMLHttpRequest(),
 			url = 'http://localhost:8000/send';
 		add.el('div', 'body', null, [['class', 'invisible']]);
@@ -567,18 +600,32 @@ const hist = {
 			add.el('td', `#sendtr${i}`, tbl.rows[i].cells[0].innerText);
 			add.el('td', `#sendtr${i}`, tbl.rows[i].cells[1].innerText);
 		}
-		xhr.open('POST', url);
+		add.listener(xhr, [['error', hist.postErr], ['loadend', hist.postSuccess]]);
+
+		xhr.open('POST', url, true);
 		xhr.setRequestHeader('Content-Type', 'application/json');
-		add.listener(xhr, [['error', hist.postErr], ['load', hist.postSuccess]]);
-		xhr.send(JSON.stringify({to: addr, html: document.querySelector('#sendTbl').outerHTML}));
+		xhr.send(JSON.stringify({to: addr, html: document.querySelector('#sendTbl').outerHTML}));*/
 		add.cancel('.invisible');
 	},
 	postErr: (err) => {
-		alert('Ocurrió un error y no se envió el pedido');
+		alert('Ocurrió un error con la conexión');
 		console.log('error >>>', err);
 	},
-	postSuccess: () => {
-		alert('Se envió el pedido éxitosamente');
+	postSuccess: (evt) => {
+		console.log(evt);
+		// evt.target.readyState
+		let rdySt = evt.target.readyState;
+		if (rdySt === XMLHttpRequest.DONE) {
+			const status = evt.target.status;
+			if (status === 0 || (status >= 200 && status < 400)) {
+				console.log(evt.target.responseText);
+			} else {
+				console.log('something went wrong with the request');
+				console.log('response.status >>>', evt.target.status);
+				console.log('responseText >>>', evt.target.responseText);
+			}
+		}
+		//alert('Se envió el pedido éxitosamente');
 	},
 };
 

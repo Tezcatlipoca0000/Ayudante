@@ -36,14 +36,13 @@ const requestListener = (req, res) => {
 		res.writeHead(204, headers);
 		res.end();
 		return;
-	}
-	if (req.method === 'GET') {
+	} else if (req.method === 'GET') {
 		console.log('data fetched')
 		res.writeHead(200, headers);
 		res.end(data);
 		return;
-	}
-	if (req.method === 'POST' && req.url === '/') {
+	} else if (req.method === 'POST' && req.url === '/') {
+		res.writeHead(200, headers);
 		let body = [];
 		req.on('data', d =>{
 			body.push(d);
@@ -54,15 +53,14 @@ const requestListener = (req, res) => {
 			});
 			res.end();
 		});
-	}
-	if (req.method === 'POST' && req.url === '/send') {
+	} else if (req.method === 'POST' && req.url === '/send') {
+		res.writeHead(200, headers);
 		let sendOpt = [];
 		req.on('data', d => {
 			sendOpt.push(d);
 		}).on('end', () => {
 			sendOpt = Buffer.concat(sendOpt).toString();
 			sendOpt = JSON.parse(sendOpt);
-			console.log('oiii', typeof sendOpt.html);
 			let mailOptions = {
 				from: process.env.MAIL_ADDR,
 				to: sendOpt.to,
@@ -71,17 +69,16 @@ const requestListener = (req, res) => {
 			};
 			transporter.sendMail(mailOptions, (err, info) => {
 				if (err) {
-					console.log(err);
-					res.send('<p>hubo un errorrrr</p>')
+					res.end(JSON.stringify({serverResponse: err, error: true}));
 				} else {
-					console.log(`Email sent: ${info.response}`);
+					res.end(JSON.stringify({serverResponse: info, error: false}));
 				}
 			});
-			res.end();
 		});
+	} else {
+		res.writeHead(405, headers);
+		res.end(`${req.method} is not allowed for the request.`);
 	}
-	res.writeHead(405, headers);
-	res.end(`${req.method} is not allowed for the request.`);
 };
 
 const server = http.createServer(requestListener);
