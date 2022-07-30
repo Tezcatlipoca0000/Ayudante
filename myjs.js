@@ -548,9 +548,12 @@ const hist = {
 	// captures mail address to send pedido
 	sendMenu: () => {
 		// TODO flash sendMenu's border-box when trying to close behind-menu before allowed
+		// MAYBE: try >> make a GET '/send' req the email addrs. catch >> err. finally >> set value attribute.
 		add.menu('histSendMenu', [['Enviar pedido a:', 'histSendGrid', 'histSendFlex']]);
 		add.el('label', '#histSendGrid', 'Dirección de correo:');
 		add.el('input', '#histSendGrid', '', [['value', 'superfuentes300@gmail.com']]);
+		add.el('i', '#histSendGrid', null, [['class', 'sendMnuSvg'], ['title', 'Escriba una o varias direcciones separadas por una coma']]);
+		add.icons('.sendMnuSvg');
 		add.el('button', '#histSendFlex', 'Cancelar', '', [['click', () => add.cancel('#histSendMenu')]]);
 		add.el('button', '#histSendFlex', 'Enviar', [['type', 'button']], [['click', hist.send]]);
 	},

@@ -65,6 +65,7 @@ const requestListener = (req, res) => {
 			let mailOptions = {
 				from: process.env.MAIL_ADDR,
 				to: sendOpt.to,
+				cc: process.env.MAIL_ADDR,
 				subject: process.env.MAIL_SUBJ,
 				html: process.env.MAIL_HEADER + sendOpt.html
 			};
