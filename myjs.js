@@ -742,61 +742,70 @@ const datos = {
 	// Filter table by col, row or key
 	'filter': () => {
 		datos.table(keys.datosHeaders, keys.datosKeys);
-		let boxes = document.querySelectorAll('.menu input[type="checkbox"]'),
+		let boxes = document.querySelectorAll('.menu input[type="checkbox"]'), // input columns
 			others = [], 
 			date = document.querySelector('.menu input[type=date]'),
-			value = date.value,
+			value = date.value, // input date
 			re = /\d+/,
-			codes = document.querySelector('.menu input[type=text]').value.split(' '),
+			codes = document.querySelector('.menu input[type=text]').value.split(' '), // clave prov.
 			tr = document.querySelectorAll('.table tbody tr'),
 			menu = document.querySelector('.menu'); 
+		// FILTER ROWS BY CODE
 		if (codes[0]) {
-			codes.forEach(n => {
-				for (let i of tr) {
-					for (let j of i.cells) {
+			codes.forEach(n => { // loop codes
+				for (let i of tr) { // loop rows
+					for (let j of i.cells) { // loop td
+						// id td matches code[n]
 						if (j.dataset.col === 'claveProv' && j.innerText === n) {
-							others.push(i.id);
+							// capture row id
+							others.push(i.id); 
 						}
 					}
 				}
 			});
-			for (let i of tr) {
+			for (let i of tr) { // loop rows
 				let del = true;
-				others.forEach(n => {
+				others.forEach(n => { // loop row ids
+					// if row id match captured id
 					if (i.attributes.id.value === n) {
-						del = false;
+						del = false; // don't delete
 					}
 				});
+				// otherwise delete row
 				if (del) {
 					i.remove();
 				}
 			}
-			others = [];
+			// MAYBE -- after del use appendChild to reorder the html collection to match input order
+			others = []; // reset others 
 		}
+		// FILTER ROW BY DATE
 		if (value !== '') {
 			let	year = value.match(re)[0];
 			value = value.slice(year.length + 1);
 			let month = value.match(re)[0];
 			value = value.slice(month.length + 1);
-			value = `${value}/${month}/${year}`;
-			for (let i of tr) {
-				for (let j of i.cells) {
+			value = `${value}/${month}/${year}`; // input date in correct format
+			for (let i of tr) { // loop rows
+				for (let j of i.cells) { // loop td
+					// if row don't have correct date
 					if (j.dataset.col === 'revCostos' && j.innerText !== value) {
-						i.remove();
+						i.remove(); // remove row
 					}
 				}
 			}
 		}
-		for (let i of boxes) {
+		// FILTER COLUMN
+		for (let i of boxes) { // loop boxes
 			if (i.checked === false && i.labels) {
-				others.push(i.labels[0].attributes.datos.value);
+				others.push(i.labels[0].attributes.datos.value); // capture col to delete
 			}
 		}
-		for (let i of others) {
+		for (let i of others) { // loop columns to del
 			let x = document.querySelectorAll(`table [data-col=${i}]`);
-			for (let j of x) j.remove();
+			for (let j of x) j.remove(); // loop & del every td that matches captured col
 		}
-		menu.remove();
+		menu.remove(); // close menu after finish
 	},
 	// Menu for user input on creating a new registry
 	'newMenu': (evt) => {
@@ -1284,4 +1293,25 @@ add.listener(document,
 				}
 			}
 		}],
-	]);
+	]
+);
+
+/*
+
+					*************************
+
+-- filtrar x filas > clave provedor = insertar un question icon(title: separar las claves con un espacio)
+-- filtrar x filas > clave provedor = cambiar placeholder(clave(s) de prov.) 
+-- filtrar x filas > clave provedor = notificar cuando una clave no existe prompt create? or disregard?
+
+-- display = make responsive !
+
+-- DATOS > td[contenteditable] = aceptar signo "=" para vincular info con otra td (='#reg')
+
+-- MAYBE -- COMPARATOR = construir un comparador de costos (mi tienda, soriana, heb, walmart) (SERVER)
+
+-- PENDING -- COBRAR = dev
+
+					*************************
+
+*/
