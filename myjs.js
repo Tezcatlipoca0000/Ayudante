@@ -776,7 +776,10 @@ const datos = {
 					i.remove();
 				}
 			}
-			// MAYBE -- after del use appendChild to reorder the html collection to match input order
+			// Re-order the html collection to match input order
+			let order = [];
+			others.forEach(n => order.push(document.querySelector(`#${n}`)));
+			order.forEach(n => document.querySelector('.table tbody').append(n));
 			others = []; // reset others 
 		}
 		// FILTER ROW BY DATE
