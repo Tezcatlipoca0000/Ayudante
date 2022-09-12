@@ -1307,6 +1307,8 @@ add.listener(document,
 -- display = make responsive !
 
 -- DATOS > td[contenteditable] = aceptar signo "=" para vincular info con otra td (='#reg')
+-- DATOS > td[contenteditable] = eventlistener(click) make behave like ctrl + arrow ~ (give selection to td) ~ (responsivness)
+-- DATOS > td[contenteditable] > subtotal | precio = make ctrl + enter | double click to update corresponding date column
 
 -- MAYBE -- COMPARATOR = construir un comparador de costos (mi tienda, soriana, heb, walmart) (SERVER)
 
