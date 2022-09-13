@@ -1175,12 +1175,20 @@ add.listener(document,
 	[
 		['DOMContentLoaded', standBy.display],
 		['click', (evt) => {
-			// ALL >>>> add .selected to td
+			// ALL >>>> add selection to td
 			let td = evt.target.closest('td[contenteditable]');
 			if (td) {
 				let sel = document.querySelector('.selected');
 				if (sel) sel.classList.remove('selected');
 				td.classList.add('selected');
+				//
+				sel = document.querySelector('.selected');
+				sel.focus();
+				let selection = window.getSelection(),
+					range = document.createRange();
+				range.selectNodeContents(sel);
+				selection.removeAllRanges();
+				selection.addRange(range);
 			}
 			// DATOS >>>> sort th 
 			if (main.state === 'navDatos') {
