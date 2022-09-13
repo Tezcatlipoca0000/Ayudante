@@ -1299,6 +1299,12 @@ add.listener(document,
 						selection.addRange(range);
 					}
 				}
+				if (evt.key === 'Enter' && evt.ctrlKey) {
+					// update subtotal || publico date with ctrl + enter
+					if (sel.dataset.col === 'subtotal' || sel.dataset.col === 'publico') {
+						update.row(sel.parentElement, sel, keys.datosModel());
+					}
+				}
 			}
 			// closes menus with esc 
 			if (mnu) {
