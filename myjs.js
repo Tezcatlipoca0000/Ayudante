@@ -1181,7 +1181,6 @@ add.listener(document,
 				let sel = document.querySelector('.selected');
 				if (sel) sel.classList.remove('selected');
 				td.classList.add('selected');
-				//
 				sel = document.querySelector('.selected');
 				sel.focus();
 				let selection = window.getSelection(),
@@ -1213,11 +1212,15 @@ add.listener(document,
 			}
 		}],
 		['dblclick', (evt) => {
-			// DATOS >>>> toggle taxes and updates datos table && db
+			// DATOS 
 			if (main.state === 'navDatos') {
 				let td = evt.target.closest('td');
-				if (!td) return 
-				if (td.dataset.col === 'iva' || td.dataset.col === 'ieps') datos.changeTax(td);
+				if (!td) return
+				let col = td.dataset.col; 
+				// toggle taxes with dblClick
+				if (col === 'iva' || col === 'ieps') datos.changeTax(td);
+				// updates subtotal or publico date with dblClick
+				if (col === 'subtotal' || col === 'publico') update.row(td.parentElement, td, keys.datosModel());
 			}
 		}], 
 		['keydown', evt => {
