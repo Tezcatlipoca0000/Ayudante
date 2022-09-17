@@ -140,6 +140,10 @@ const add = {
 	},
 	// forces input to validate
 	'inputValidation': (target) => {
+		// REFERER IDEA: accept references in subtotal | publico 
+		// >>>>> create a regexp ^=\d+$ to capture
+		// >>>>> if captured look in db for reg and change txt of target.innerText & add refer: reg to target.db
+		// >>>>> continue with update.row
 		let re1 = /\$/g,
 			re2 = /[-#!%^&*()_+|~=`{}\[\]:";'<>?,\/a-zA-Z]|\.{2,}|\${2,}/g,
 			re3 = /[-#!%^&*()_+|~=`{}\[\]:";'<>?,\/a-zA-Z\.\$]/g,
@@ -214,8 +218,12 @@ const calc = {
 };
 
 const update = {
+	// MAYBE -- I have everything wrong i should update db first (diff func) and then update td with db
 	// updates table row when changes has been made
 	'row': (row, target, model, tx) => {
+		// REFERER IDEA
+		// >>>>> TO DO
+		// >>>>> at the end add a update.refs(reg)
 		let reg = row.dataset.registro,
 			data = (db.state.filter(n => n.registro === reg))[0],
 			col = target.dataset.col;
@@ -310,6 +318,10 @@ const update = {
 				break;
 		}
 	},
+	// refs(reg) {}
+	// looks in db if there's any ref: reg that matches 
+	// if any match is in table then update.row()
+	// if any match is not in table then update db manually
 };
 
 const save = {
