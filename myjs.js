@@ -220,6 +220,62 @@ const calc = {
 const update = {
 	// MAYBE -- I have everything wrong i should update db first (diff func) and then update td with db
 	// updates table row when changes has been made
+	// ** ** ** ** ** **
+	// WORKING ON BRANCH -- FIX UPDATE FUNCTION --
+	// -- first update.db(target)
+	// -- then update.row(reg)
+	// -- ignore comments on referer feature
+	// ** ** ** ** ** ** 
+	'db': (td, row, tx) => {
+		// TO DO -- MAKE SURE TXT IS FROM INPUT-VALIDATION FUNC NOT USER
+		// DONT FORGET TO TAKE INTO ACCOUNT TAXES
+		console.log('heyyyyyyy oiiiii', td, row);
+		let reg = row.dataset.registro,
+			col = td.dataset.col;
+		let x = db.state.map(n => {
+			if (n.registro === reg) {
+				console.log('if n = reg', n);
+				if (tx === 'iva') n.iva = n.iva === '$0.00' ? calc.mult([Number(n.subtotal.replace('$', '')), IVA]) : '$0.00';
+				if (tx === 'ieps') n.ieps = n.ieps === '$0.00' ? calc.mult([Number(n.subtotal.replace('$', '')), IEPS]) : '$0.00';
+				if (!tx) n[col] = td.innerText; // MAYBE CHANGE HERE <<<<<<
+				switch(col) {
+					case 'subtotal': case 'iva': case 'ieps': case 'piezas':
+						// iva ieps total uni margen utu utp revC difB
+						if (n.iva !== '$0.00') n.iva = calc.mult([Number(n.subtotal.replace('$', '')), IVA]);
+						if (n.ieps !== '$0.00') n.ieps = calc.mult([Number(n.subtotal.replace('$', '')), IEPS]);
+						n.total = calc.total([Number(n.subtotal.replace('$', '')), Number(n.iva.replace('$', '')), Number(n.ieps.replace('$', ''))]);
+						n.unitario = calc.unitario([Number(n.total.replace('$', '')), Number(n.piezas)]);
+						n.margen = calc.margen([Number(n.publico.replace('$', '')), Number(n.unitario.replace('$', ''))]);
+						n.margenB = calc.margen([Number(n.publico.replace('$', '')), Number(n.biblia.replace('$', ''))]);
+						n.utilidadUnitaria = calc.sub([Number(n.publico.replace('$', '')), Number(n.unitario.replace('$', ''))]);
+						n.utilidadPedido = calc.mult([Number(n.piezas), Number(n.utilidadUnitaria.replace('$', ''))]);
+						n.revCostos = add.date();
+						n.diferenciaB = calc.sub([Number(n.unitario.replace('$', '')), Number(n.biblia.replace('$', ''))]);
+						break;
+					case 'publico':
+						// margen, utu utp revP
+						n.margen = calc.margen([Number(n.publico.replace('$', '')), Number(n.unitario.replace('$', ''))]);
+						n.margenB = calc.margen([Number(n.publico.replace('$', '')), Number(n.biblia.replace('$', ''))]);
+						n.utilidadUnitaria = calc.sub([Number(n.publico.replace('$', '')), Number(n.unitario.replace('$', ''))]);
+						n.utilidadPedido = calc.mult([Number(n.piezas), Number(n.utilidadUnitaria.replace('$', ''))]);
+						n.revPrecios = add.date();
+						break;
+					case 'biblia':
+						// difB
+						n.diferenciaB = calc.sub([Number(n.unitario.replace('$', '')), Number(n.biblia.replace('$', ''))]);
+						n.margenB = calc.margen([Number(n.publico.replace('$', '')), Number(n.biblia.replace('$', ''))]);
+						break;
+					// ADD A CASE FOR LIMITE ???
+					default:
+						break;
+				}
+				return n;
+			} else {
+				return n;
+			}
+		});
+		console.log('the enddd', x);
+	},
 	'row': (row, target, model, tx) => {
 		// REFERER IDEA
 		// >>>>> TO DO
@@ -712,11 +768,12 @@ const datos = {
 		}		
 	},
 	// updates table & db
-	'update': (evt, td) => {
+	'update': (td) => {
 		let row = td.parentElement;
 		if (globalTimeout) clearTimeout(globalTimeout);
 		globalTimeout = setTimeout(() => {
 			add.inputValidation(td);
+			update.db(td, row);
 			update.row(row, td, keys.datosModel());
 		}, 1000);
 
@@ -1214,7 +1271,7 @@ add.listener(document,
 			if (main.state === 'navDatos') {
 				let td = evt.target.closest('td');
 				if (!td) return;
-				datos.update(evt, td);
+				datos.update(td);
 			}
 			// PEDIDO >>>> update pedido table && db
 			if (main.state === 'navPedido') {
