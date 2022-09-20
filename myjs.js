@@ -227,17 +227,15 @@ const update = {
 	// -- ignore comments on referer feature
 	// ** ** ** ** ** ** 
 	'db': (td, row, tx) => {
-		// TO DO -- MAKE SURE TXT IS FROM INPUT-VALIDATION FUNC NOT USER
-		// DONT FORGET TO TAKE INTO ACCOUNT TAXES
 		console.log('heyyyyyyy oiiiii', td, row);
 		let reg = row.dataset.registro,
 			col = td.dataset.col;
-		let x = db.state.map(n => {
+		db.state = db.state.map(n => {
 			if (n.registro === reg) {
 				console.log('if n = reg', n);
 				if (tx === 'iva') n.iva = n.iva === '$0.00' ? calc.mult([Number(n.subtotal.replace('$', '')), IVA]) : '$0.00';
 				if (tx === 'ieps') n.ieps = n.ieps === '$0.00' ? calc.mult([Number(n.subtotal.replace('$', '')), IEPS]) : '$0.00';
-				if (!tx) n[col] = td.innerText; // MAYBE CHANGE HERE <<<<<<
+				if (!tx) n[col] = td.innerText; 
 				switch(col) {
 					case 'subtotal': case 'iva': case 'ieps': case 'piezas':
 						// iva ieps total uni margen utu utp revC difB
@@ -266,6 +264,9 @@ const update = {
 						n.margenB = calc.margen([Number(n.publico.replace('$', '')), Number(n.biblia.replace('$', ''))]);
 						break;
 					// ADD A CASE FOR LIMITE ???
+					case 'limite':
+						n.limite = td.innerText;
+						break;
 					default:
 						break;
 				}
@@ -274,76 +275,37 @@ const update = {
 				return n;
 			}
 		});
-		console.log('the enddd', x);
+		console.log('the enddd', db.state);
 	},
-	'row': (row, target, model, tx) => {
+	'row': (td, row) => {
 		// REFERER IDEA
 		// >>>>> TO DO
 		// >>>>> at the end add a update.refs(reg)
+		// ** ** ** ** ** **
+		// WORKING ON BRANCH -- FIX UPDATE FUNCTION --
+		// ROW TAKES DB AS MODEL
+		// if pedido -- (the col name 'pedido' should be used in pedidos and cobrar) -- {multiply and change td}
+		// else {change td}
+		// ignore referer for now
+		// ** ** ** ** ** ** 
 		let reg = row.dataset.registro,
 			data = (db.state.filter(n => n.registro === reg))[0],
-			col = target.dataset.col;
-		for (let i of Object.keys(data)) {
-			if (model.hasOwnProperty(i)) model[i] = data[i];
-		}
-		model[col] = target.innerText;
-		if (tx === 'iva') {
-			model.iva = model.iva === '$0.00' ? calc.mult([Number(model.subtotal.replace('$', '')), IVA]) : '$0.00';
-		} else if (tx === 'ieps') {
-			model.ieps = model.ieps === '$0.00' ? calc.mult([Number(model.subtotal.replace('$', '')), IEPS]) : '$0.00';
-		}
-		switch(col) {
-			// 'pedido' should be used by pedido and cobrar = last-col = 'total'
-			case 'pedido':
-				model.total = `$${(Number(model.total.replace('$', '')) * Number(model.pedido)).toFixed(2)}`; 
-				break;
-			case 'subtotal': case 'iva': case 'ieps': case 'piezas':
-				// iva ieps total uni margen utu utp revC difB
-				if (model.iva !== '$0.00') model.iva = calc.mult([Number(model.subtotal.replace('$', '')), IVA]);
-				if (model.ieps !== '$0.00') model.ieps = calc.mult([Number(model.subtotal.replace('$', '')), IEPS]);
-				model.total = calc.total([Number(model.subtotal.replace('$', '')), Number(model.iva.replace('$', '')), Number(model.ieps.replace('$', ''))]);
-				model.unitario = calc.unitario([Number(model.total.replace('$', '')), Number(model.piezas)]);
-				model.margen = calc.margen([Number(model.publico.replace('$', '')), Number(model.unitario.replace('$', ''))]);
-				model.margenB = calc.margen([Number(model.publico.replace('$', '')), Number(model.biblia.replace('$', ''))]);
-				model.utilidadUnitaria = calc.sub([Number(model.publico.replace('$', '')), Number(model.unitario.replace('$', ''))]);
-				model.utilidadPedido = calc.mult([Number(model.piezas), Number(model.utilidadUnitaria.replace('$', ''))]);
-				model.revCostos = add.date();
-				model.diferenciaB = calc.sub([Number(model.unitario.replace('$', '')), Number(model.biblia.replace('$', ''))]);
-				break;
-			case 'publico':
-				// margen, utu utp revP
-				model.margen = calc.margen([Number(model.publico.replace('$', '')), Number(model.unitario.replace('$', ''))]);
-				model.margenB = calc.margen([Number(model.publico.replace('$', '')), Number(model.biblia.replace('$', ''))]);
-				model.utilidadUnitaria = calc.sub([Number(model.publico.replace('$', '')), Number(model.unitario.replace('$', ''))]);
-				model.utilidadPedido = calc.mult([Number(model.piezas), Number(model.utilidadUnitaria.replace('$', ''))]);
-				model.revPrecios = add.date();
-				break;
-			case 'biblia':
-				// difB
-				model.diferenciaB = calc.sub([Number(model.unitario.replace('$', '')), Number(model.biblia.replace('$', ''))]);
-				model.margenB = calc.margen([Number(model.publico.replace('$', '')), Number(model.biblia.replace('$', ''))]);
-				break;
-			default:
-				break;
-		}
-		// changes cells with new data 
-		for (let i of row.cells) {
-			// limite shouldn't overwrite total td
-			if (col !== 'limite' && model.hasOwnProperty(i.dataset.col)) i.innerText = model[i.dataset.col];
-		}
-		// update db 
-		if (col !== 'pedido') { // pedido shouldn't overwrite total in db
-			for (let i of db.state) {
-				if (i.registro === reg) {
-					for (let j of Object.keys(model)) {
-						if (i.hasOwnProperty(j)) i[j] = model[j];
-					}
-					if (col === 'limite') i[col] = model[col]; 
+			col = td.dataset.col;
+
+		if (col === 'limite') {
+			return
+		} else if (col === 'pedido') {
+			for (let i of row.cells) {
+				if (i.dataset.col === 'total') {
+					i.innerText = `$${Number(td.innerText) * Number(data.total.replace('$', ''))}`;
 				}
 			}
+		} else {
+			for (let i of row.cells) {
+				if (data.hasOwnProperty(i.dataset.col)) i.innerText = data[i.dataset.col];
+			}
 		}
-		// delete model keys to re-use
-		for (let i of Object.keys(model)) model[i] = '';
+		
 	},
 	// updates total column
 	'col': () => {
@@ -374,7 +336,7 @@ const update = {
 				break;
 		}
 	},
-	// refs(reg) {}
+	// 'refs': (reg) => {},
 	// looks in db if there's any ref: reg that matches 
 	// if any match is in table then update.row()
 	// if any match is not in table then update db manually
@@ -693,7 +655,7 @@ const pedido = {
 		add.el('td', '#pedidoFoot', '', [['id', 'pedidoTotal']]);		 
 	},
 	// on td input: update db and/or table 
-	'update': (evt, td) => {
+	'update': (td) => {
 		let row = td.parentElement,
 			reg = row.dataset.registro,
 			input = td.innerText,
@@ -701,7 +663,8 @@ const pedido = {
 		if (globalTimeout) clearTimeout(globalTimeout);
 		globalTimeout = setTimeout(() => {
 			add.inputValidation(td);
-			update.row(row, td, keys.pedidoModel); 
+			update.db(td, row);
+			update.row(td, row); 
 			update.col();
 		}, 500);				
 	},
@@ -774,7 +737,7 @@ const datos = {
 		globalTimeout = setTimeout(() => {
 			add.inputValidation(td);
 			update.db(td, row);
-			update.row(row, td, keys.datosModel());
+			update.row(td, row);
 		}, 1000);
 
 	},
@@ -782,7 +745,8 @@ const datos = {
 	'changeTax': (td) => {
 		let tx = td.dataset.col,
 			row = td.parentElement;
-		update.row(row, td, keys.datosModel(), tx);
+		update.db(td, row, tx);
+		update.row(td, row);
 	},
 	// Menu for user input on filtering options
 	'filterMenu': (evt) => {
@@ -1277,7 +1241,7 @@ add.listener(document,
 			if (main.state === 'navPedido') {
 				let td = evt.target.closest('td');
 				if (!td) return;
-				pedido.update(evt, td);
+				pedido.update(td);
 			}
 		}],
 		['dblclick', (evt) => {
@@ -1289,7 +1253,10 @@ add.listener(document,
 				// toggle taxes with dblClick
 				if (col === 'iva' || col === 'ieps') datos.changeTax(td);
 				// updates subtotal or publico date with dblClick
-				if (col === 'subtotal' || col === 'publico') update.row(td.parentElement, td, keys.datosModel());
+				if (col === 'subtotal' || col === 'publico') {
+					update.db(td, td.parentElement);
+					update.row(td, td.parentElement);
+				}
 			}
 		}], 
 		['keydown', evt => {
@@ -1371,7 +1338,8 @@ add.listener(document,
 				if (main.state === 'navDatos' && evt.key === 'Enter' && evt.ctrlKey) {
 					// update subtotal || publico date with ctrl + enter
 					if (sel.dataset.col === 'subtotal' || sel.dataset.col === 'publico') {
-						update.row(sel.parentElement, sel, keys.datosModel());
+						update.db(sel, sel.parentElement);
+						update.row(sel, sel.parentElement);
 					}
 				}
 			}
