@@ -220,19 +220,11 @@ const calc = {
 const update = {
 	// MAYBE -- I have everything wrong i should update db first (diff func) and then update td with db
 	// updates table row when changes has been made
-	// ** ** ** ** ** **
-	// WORKING ON BRANCH -- FIX UPDATE FUNCTION --
-	// -- first update.db(target)
-	// -- then update.row(reg)
-	// -- ignore comments on referer feature
-	// ** ** ** ** ** ** 
 	'db': (td, row, tx) => {
-		console.log('heyyyyyyy oiiiii', td, row);
 		let reg = row.dataset.registro,
 			col = td.dataset.col;
 		db.state = db.state.map(n => {
 			if (n.registro === reg) {
-				console.log('if n = reg', n);
 				if (tx === 'iva') n.iva = n.iva === '$0.00' ? calc.mult([Number(n.subtotal.replace('$', '')), IVA]) : '$0.00';
 				if (tx === 'ieps') n.ieps = n.ieps === '$0.00' ? calc.mult([Number(n.subtotal.replace('$', '')), IEPS]) : '$0.00';
 				if (!tx) n[col] = td.innerText; 
@@ -275,19 +267,11 @@ const update = {
 				return n;
 			}
 		});
-		console.log('the enddd', db.state);
 	},
 	'row': (td, row) => {
 		// REFERER IDEA
 		// >>>>> TO DO
 		// >>>>> at the end add a update.refs(reg)
-		// ** ** ** ** ** **
-		// WORKING ON BRANCH -- FIX UPDATE FUNCTION --
-		// ROW TAKES DB AS MODEL
-		// if pedido -- (the col name 'pedido' should be used in pedidos and cobrar) -- {multiply and change td}
-		// else {change td}
-		// ignore referer for now
-		// ** ** ** ** ** ** 
 		let reg = row.dataset.registro,
 			data = (db.state.filter(n => n.registro === reg))[0],
 			col = td.dataset.col;
