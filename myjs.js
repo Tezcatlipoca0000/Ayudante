@@ -255,7 +255,6 @@ const update = {
 						n.diferenciaB = calc.sub([Number(n.unitario.replace('$', '')), Number(n.biblia.replace('$', ''))]);
 						n.margenB = calc.margen([Number(n.publico.replace('$', '')), Number(n.biblia.replace('$', ''))]);
 						break;
-					// ADD A CASE FOR LIMITE ???
 					case 'limite':
 						n.limite = td.innerText;
 						break;
