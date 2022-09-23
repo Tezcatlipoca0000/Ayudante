@@ -140,10 +140,12 @@ const add = {
 	},
 	// forces input to validate
 	'inputValidation': (target) => {
-		// REFERER IDEA: accept references in subtotal | publico 
+		// REFERER IDEA: accept references to a registry in subtotal | publico 
 		// >>>>> create a regexp ^=\d+$ to capture
 		// >>>>> if captured look in db for reg and change txt of target.innerText & add refer: reg to target.db
 		// >>>>> continue with update.row
+		// >>>>> update.row lunches update.refs()
+		// >>>>> update.refs looks for refs: reg and updates db. then lunches update.row in a loop for all matches
 		let re1 = /\$/g,
 			re2 = /[-#!%^&*()_+|~=`{}\[\]:";'<>?,\/a-zA-Z]|\.{2,}|\${2,}/g,
 			re3 = /[-#!%^&*()_+|~=`{}\[\]:";'<>?,\/a-zA-Z\.\$]/g,
@@ -218,8 +220,7 @@ const calc = {
 };
 
 const update = {
-	// MAYBE -- I have everything wrong i should update db first (diff func) and then update td with db
-	// updates table row when changes has been made
+	// updates db when changes has been made
 	'db': (td, row, tx) => {
 		let reg = row.dataset.registro,
 			col = td.dataset.col;
@@ -267,6 +268,7 @@ const update = {
 			}
 		});
 	},
+	// updates table rows with db info
 	'row': (td, row) => {
 		// REFERER IDEA
 		// >>>>> TO DO
@@ -321,8 +323,8 @@ const update = {
 	},
 	// 'refs': (reg) => {},
 	// looks in db if there's any ref: reg that matches 
-	// if any match is in table then update.row()
-	// if any match is not in table then update db manually
+	// update db
+	// update table
 };
 
 const save = {
@@ -1340,15 +1342,14 @@ add.listener(document,
 
 					*************************
 
--- filtrar x filas > clave provedor = insertar un question icon(title: separar las claves con un espacio)
--- filtrar x filas > clave provedor = cambiar placeholder(clave(s) de prov.) 
--- filtrar x filas > clave provedor = notificar cuando una clave no existe prompt create? or disregard?
+-- DATOS > filtrar x filas > clave provedor = insertar un question icon(title: separar las claves con un espacio)
+-- DATOS > filtrar x filas > clave provedor = cambiar placeholder(clave(s) de prov.) 
+-- DATOS > filtrar x filas > clave provedor = notificar cuando una clave no existe prompt create? or disregard?
 
 -- display = make responsive !
 
 -- DATOS > td[contenteditable] = aceptar signo "=" para vincular info con otra td (='#reg')
--- DATOS > td[contenteditable] = eventlistener(click) make behave like ctrl + arrow ~ (give selection to td) ~ (responsivness)
--- DATOS > td[contenteditable] > subtotal | precio = make ctrl + enter | double click to update corresponding date column
+-- DATOS > filtrar x col = añadir la col del reg para los botones de "accessos rápidos" por defecto
 
 -- MAYBE -- COMPARATOR = construir un comparador de costos (mi tienda, soriana, heb, walmart) (SERVER)
 
