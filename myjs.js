@@ -150,27 +150,42 @@ const add = {
 			re2 = /[-#!%^&*()_+|~=`{}\[\]:";'<>?,\/a-zA-Z]|\.{2,}|\${2,}/g,
 			re3 = /[-#!%^&*()_+|~=`{}\[\]:";'<>?,\/a-zA-Z\.\$]/g,
 			re4 = /[-#!%^&*()_+|~=`{}\[\]:";'<>?,\/a-zA-Z\$]|\.{2,}/g,
+			re5 = /^=\d+$/,
 			txt = target.innerText,
 			col = target.dataset.col,
 			tst1 = re1.test(txt),
 			tst2 = re2.test(txt),
 			tst3 = re3.test(txt),
-			tst4 = re4.test(txt);
+			tst4 = re4.test(txt),
+			tst5 = re5.test(txt);
 		switch (col) {
 			case 'subtotal': case 'publico': case 'biblia': // inforce correct format (ex. $10.00)
-				// remove symbols, characters, more that two . or $
-				if (tst2) {
-					txt = txt.replaceAll(re2, '');
+				if (tst5) {
+					console.log('correct regexp!!!!', target);
+					let ref = txt.replace('=', ''),
+						reg = target.parentElement.dataset.registro,
+						data = (db.state.filter(n => n.registro === ref))[0];
+					db.state = db.state.map(n => {
+						if (n.registro === reg) n.refer = ref;
+						return n
+					});
+					console.log('finished tst5', db.state);
+					txt = data[col]
+				} else {
+					// remove symbols, characters, more that two . or $
+					if (tst2) {
+						txt = txt.replaceAll(re2, '');
+					}
+					// put $ in right place
+					if (tst1 && txt[0] !== '$') {
+						txt = txt.replaceAll(re1, '');
+					} 
+					// insert $ if inexistant
+					if (!tst1) {
+						txt = `$${txt}`;
+					} 
+					txt = `$${Number(txt.replace('$', '')).toFixed(2)}`;
 				}
-				// put $ in right place
-				if (tst1 && txt[0] !== '$') {
-					txt = txt.replaceAll(re1, '');
-				} 
-				// insert $ if inexistant
-				if (!tst1) {
-					txt = `$${txt}`;
-				} 
-				txt = `$${Number(txt.replace('$', '')).toFixed(2)}`;
 				target.innerText = txt;
 				break;
 			case 'pedido': //numers (whole/decimal)
@@ -221,14 +236,16 @@ const calc = {
 
 const update = {
 	// updates db when changes has been made
-	'db': (td, row, tx) => {
-		let reg = row.dataset.registro,
-			col = td.dataset.col;
+	'db': (reg, col, txt) => {
 		db.state = db.state.map(n => {
 			if (n.registro === reg) {
-				if (tx === 'iva') n.iva = n.iva === '$0.00' ? calc.mult([Number(n.subtotal.replace('$', '')), IVA]) : '$0.00';
-				if (tx === 'ieps') n.ieps = n.ieps === '$0.00' ? calc.mult([Number(n.subtotal.replace('$', '')), IEPS]) : '$0.00';
-				if (!tx) n[col] = td.innerText; 
+				if (col === 'iva') {
+					n.iva = n.iva === '$0.00' ? calc.mult([Number(n.subtotal.replace('$', '')), IVA]) : '$0.00';
+				} else if (col === 'ieps') {
+					n.ieps = n.ieps === '$0.00' ? calc.mult([Number(n.subtotal.replace('$', '')), IEPS]) : '$0.00';
+				} else {
+					n[col] = txt;
+				}
 				switch(col) {
 					case 'subtotal': case 'iva': case 'ieps': case 'piezas':
 						// iva ieps total uni margen utu utp revC difB
@@ -257,7 +274,7 @@ const update = {
 						n.margenB = calc.margen([Number(n.publico.replace('$', '')), Number(n.biblia.replace('$', ''))]);
 						break;
 					case 'limite':
-						n.limite = td.innerText;
+						n.limite = txt;
 						break;
 					default:
 						break;
@@ -290,7 +307,7 @@ const update = {
 				if (data.hasOwnProperty(i.dataset.col)) i.innerText = data[i.dataset.col];
 			}
 		}
-		
+		update.refs(td, reg);
 	},
 	// updates total column
 	'col': () => {
@@ -325,6 +342,15 @@ const update = {
 	// looks in db if there's any ref: reg that matches 
 	// update db
 	// update table
+	'refs': (td, reg) => {
+		db.state.forEach(n => {
+			if (n.refer === reg) {
+				update.db(n.registro, td.dataset.col, td.innerText);
+				console.log('refer matched', db.state);
+				// loop table change if necessary
+			}
+		});
+	},
 };
 
 const save = {
@@ -648,7 +674,7 @@ const pedido = {
 		if (globalTimeout) clearTimeout(globalTimeout);
 		globalTimeout = setTimeout(() => {
 			add.inputValidation(td);
-			update.db(td, row);
+			update.db(reg, col, input);
 			update.row(td, row); 
 			update.col();
 		}, 500);				
@@ -721,7 +747,7 @@ const datos = {
 		if (globalTimeout) clearTimeout(globalTimeout);
 		globalTimeout = setTimeout(() => {
 			add.inputValidation(td);
-			update.db(td, row);
+			update.db(row.dataset.registro, td.dataset.col, td.innerText);
 			update.row(td, row);
 		}, 1000);
 
@@ -730,7 +756,7 @@ const datos = {
 	'changeTax': (td) => {
 		let tx = td.dataset.col,
 			row = td.parentElement;
-		update.db(td, row, tx);
+		update.db(row.dataset.registro, td.dataset.col, td.innerText);
 		update.row(td, row);
 	},
 	// Menu for user input on filtering options
@@ -1239,7 +1265,7 @@ add.listener(document,
 				if (col === 'iva' || col === 'ieps') datos.changeTax(td);
 				// updates subtotal or publico date with dblClick
 				if (col === 'subtotal' || col === 'publico') {
-					update.db(td, td.parentElement);
+					update.db(td.parentElement.dataset.registro, col, td.innerText);
 					update.row(td, td.parentElement);
 				}
 			}
@@ -1323,7 +1349,7 @@ add.listener(document,
 				if (main.state === 'navDatos' && evt.key === 'Enter' && evt.ctrlKey) {
 					// update subtotal || publico date with ctrl + enter
 					if (sel.dataset.col === 'subtotal' || sel.dataset.col === 'publico') {
-						update.db(sel, sel.parentElement);
+						update.db(sel.parentElement.dataset.registro, sel.dataset.col, sel.innerText);
 						update.row(sel, sel.parentElement);
 					}
 				}
