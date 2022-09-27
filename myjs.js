@@ -140,12 +140,6 @@ const add = {
 	},
 	// forces input to validate
 	'inputValidation': (target) => {
-		// REFERER IDEA: accept references to a registry in subtotal | publico 
-		// >>>>> create a regexp ^=\d+$ to capture
-		// >>>>> if captured look in db for reg and change txt of target.innerText & add refer: reg to target.db
-		// >>>>> continue with update.row
-		// >>>>> update.row lunches update.refs()
-		// >>>>> update.refs looks for refs: reg and updates db. then lunches update.row in a loop for all matches
 		let re1 = /\$/g,
 			re2 = /[-#!%^&*()_+|~=`{}\[\]:";'<>?,\/a-zA-Z]|\.{2,}|\${2,}/g,
 			re3 = /[-#!%^&*()_+|~=`{}\[\]:";'<>?,\/a-zA-Z\.\$]/g,
@@ -160,16 +154,14 @@ const add = {
 			tst5 = re5.test(txt);
 		switch (col) {
 			case 'subtotal': case 'publico': case 'biblia': // inforce correct format (ex. $10.00)
+			let reg = target.parentElement.dataset.registro;
 				if (tst5) {
-					console.log('correct regexp!!!!', target);
 					let ref = txt.replace('=', ''),
-						reg = target.parentElement.dataset.registro,
 						data = (db.state.filter(n => n.registro === ref))[0];
 					db.state = db.state.map(n => {
-						if (n.registro === reg) n.refer = ref;
+						if (n.registro === reg) n.refer = {[col]: ref};
 						return n
 					});
-					console.log('finished tst5', db.state);
 					txt = data[col]
 				} else {
 					// remove symbols, characters, more that two . or $
@@ -185,6 +177,10 @@ const add = {
 						txt = `$${txt}`;
 					} 
 					txt = `$${Number(txt.replace('$', '')).toFixed(2)}`;
+					db.state = db.state.map(n => {
+						if (n.registro === reg && n.refer && n.refer[col]) delete n.refer;
+						return n;
+					});
 				}
 				target.innerText = txt;
 				break;
@@ -287,27 +283,29 @@ const update = {
 	},
 	// updates table rows with db info
 	'row': (td, row) => {
-		// REFERER IDEA
-		// >>>>> TO DO
-		// >>>>> at the end add a update.refs(reg)
 		let reg = row.dataset.registro,
 			data = (db.state.filter(n => n.registro === reg))[0],
 			col = td.dataset.col;
-
+		// if columnm is limite don't update row
 		if (col === 'limite') {
 			return
 		} else if (col === 'pedido') {
+			// if column is pedido calculate total
 			for (let i of row.cells) {
 				if (i.dataset.col === 'total') {
 					i.innerText = `$${Number(td.innerText) * Number(data.total.replace('$', ''))}`;
 				}
 			}
 		} else {
+			// all other columns use db to update cells
 			for (let i of row.cells) {
 				if (data.hasOwnProperty(i.dataset.col)) i.innerText = data[i.dataset.col];
 			}
 		}
-		update.refs(td, reg);
+		// only for DATOS update references 
+		if (main.state === 'navDatos') {
+			update.refs(td, reg);
+		}
 	},
 	// updates total column
 	'col': () => {
@@ -338,16 +336,24 @@ const update = {
 				break;
 		}
 	},
-	// 'refs': (reg) => {},
-	// looks in db if there's any ref: reg that matches 
-	// update db
-	// update table
+	// update db & table for references
 	'refs': (td, reg) => {
+		// loop db
 		db.state.forEach(n => {
-			if (n.refer === reg) {
-				update.db(n.registro, td.dataset.col, td.innerText);
-				console.log('refer matched', db.state);
-				// loop table change if necessary
+			// if db record matches column and reg with td
+			if (n.refer && n.refer[td.dataset.col] === reg) {
+				let rows = td.parentElement.parentElement.rows,
+					referTo = n.registro;
+				// update db record
+				update.db(referTo, td.dataset.col, td.innerText);
+				// loop existing table
+				for (let i of rows) {
+					// if table row registry matches referTo
+					if (i.dataset.registro === referTo) {
+						// update row
+						update.row(i.cells[0], i);
+					}
+				}
 			}
 		});
 	},
