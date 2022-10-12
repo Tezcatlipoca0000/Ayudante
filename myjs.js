@@ -1352,6 +1352,21 @@ add.listener(document,
 						selection.addRange(range);
 					}
 				}
+				if (evt.key === 'Enter' && !evt.ctrlKey) {
+					evt.preventDefault();
+					if (y.parentElement.nextElementSibling) {
+						y = (Array.from(y.parentElement.nextElementSibling.cells)).filter(n => n.dataset.col === sel.dataset.col);
+						sel.classList.remove('selected');
+						sel = y[0];
+						sel.classList.add('selected');
+						sel.focus();
+						let selection = window.getSelection(),
+							range = document.createRange();
+						range.selectNodeContents(sel);
+						selection.removeAllRanges();
+						selection.addRange(range);
+					}
+				}
 				if (main.state === 'navDatos' && evt.key === 'Enter' && evt.ctrlKey) {
 					// update subtotal || publico date with ctrl + enter
 					if (sel.dataset.col === 'subtotal' || sel.dataset.col === 'publico') {
@@ -1384,6 +1399,7 @@ add.listener(document,
 -- DATOS > filtrar x col = añadir la col del reg para los botones de "accessos rápidos" por defecto
 
 -- MAYBE -- COMPARATOR = construir un comparador de costos (mi tienda, soriana, heb, walmart) (SERVER)
+-- MAYBE -- ACTIONS RECTANGLE = shows possible key actions depending on the main.state
 
 -- PENDING -- COBRAR = dev
 
