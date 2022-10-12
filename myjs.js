@@ -1159,7 +1159,7 @@ const intro = {
 		add.el('i', q3, '', [['class', 'intro-icon'], ['style', `background-color:${colorLocal}`], ['id', 'introIconLocal']]);
 		add.el('span', q3, 'Base de datos Local: ', [['id', 'introLocalLabel']]);
 		add.el('input', q3, '', [['type', 'file'], ['id', 'dbFile']], [['change', () => db.load('dbFile')]]);
-		add.el('p', q1, 'Datos: ', [['class', 'p2']]);
+		add.el('div', q1, 'Datos: ', [['class', 'p2']]);
 		add.el('span', q2, state, [['class', 'estado']]);
 		add.el('button', q2, 'Continuar', [['id', 'introNext']], [['click', db.next]]);
 		add.el('div', q1, '', [['class', 'intro-flex']]);
