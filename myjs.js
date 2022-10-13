@@ -200,6 +200,19 @@ const add = {
 				break;
 		}
 	},
+	'class': (str) => {
+		let x = Array.from(document.querySelectorAll('.mainBtn')).slice(0,-1);
+		let y = document.querySelector('.mainBtn:last-child');
+		console.log(y);
+		for (let i of x) {
+			i.classList.toggle(str);
+		}
+		if (y.innerText === 'Mostrar Opciones') {
+			y.innerText = 'Ocultar Opciones';
+		} else {
+			y.innerText = 'Mostrar Opciones'
+		}
+	},
 }; 
 
 const calc = {
@@ -704,6 +717,7 @@ const datos = {
 		add.el('button', q2, 'Agregar', [['class', 'mainBtn']], [['click', datos.newMenu]]);
 		add.el('button', q2, 'Eliminar', [['class', 'mainBtn']], [['click', datos.removeMenu]]);
 		add.el('button', q2, 'Imprimir', [['class', 'mainBtn']], [['click', datos.print]]);
+		add.el('button', q2, 'Mostrar Opciones', [['class', 'mainBtn navMenu']], [['click', ()=>add.class('mainBtnResp')]]);
 		add.el('table', q, '', [['class', 'table'], ['id', 'datosTable']]);
 		add.el('thead', q3, '', [['id', 'datosThead']]);
 		add.el('tbody', q3, '', [['id', 'datosTbody']]);
