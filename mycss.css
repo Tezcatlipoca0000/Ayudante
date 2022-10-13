@@ -64,6 +64,10 @@ body {
 	box-shadow: 5px 5px #666;
 }
 
+.navMenu {
+	display: none;
+}
+
 .prompt {
 	position: fixed;
 	width: 80vw;
@@ -290,6 +294,26 @@ body {
 		gap: 25px;
 		margin-top: 5vh;
 		margin-right: 3vw;
+	}
+
+	.mainBtn:not(:last-child) {
+		display: none;
+	}
+
+	.navMenu {
+		display: block;
+	}
+
+	.mainBtnResp {
+		display: block !important; 
+		margin-bottom: 2vh;
+	}
+
+	#datosBtnRow {
+		width: auto;
+		height: auto;
+		flex-direction: column;
+		align-items: flex-start;
 	}
 
 	.promptSm {
