@@ -1,9 +1,12 @@
 
-
 body {
 	margin: 0;
 	padding: 0;
 	line-height: 1.5;
+}
+
+label {
+	white-space: nowrap
 }
 
 .standBy {
@@ -62,10 +65,6 @@ body {
 	border: 1px solid #666;
 	padding: 1vw;
 	box-shadow: 5px 5px #666;
-}
-
-.navMenu {
-	display: none;
 }
 
 .prompt {
@@ -209,6 +208,7 @@ body {
 	align-items: center;
 }
 
+/* MAYBE
 .tooltip {
 	min-width: 30vw;
 	max-width: auto;
@@ -222,6 +222,7 @@ body {
 	position: fixed;
 	padding: 0vh 1vw;
 }
+*/
 
 .btnsLastRow {
 	display: flex;
@@ -258,19 +259,65 @@ body {
 	display: none;
 }
 
-@media screen and (max-width: 480px) {
+@media screen and (max-width: 768px) {
+
 	.prompt {
-		position: fixed;
-		width: 100vw;
-		height: 100vh;
+		width: 99vw;
+		height: 99vh;
 		top: 0vh;
 		left: 0vw;
+	}
+
+	.header .nav {
+		display: grid;
+		grid-template-columns: repeat(3, auto);
+		gap: 25px;
+		margin-top: 5vh;
+		margin-right: 3vw;
+	}
+
+	.menu {
+		width: 100vw;
+		height: 100vh;
+		padding: 5px;
+		top: 0vh;
+		left: 0vw;
+	}
+	
+	.grid1 {
+	  display: grid;
+	  grid-template-columns: repeat(2, 20% 25%);
+	  gap: 10px;
+  }
+	
+	.promptSm {
+		position: fixed;
+		width: 70vw;
+		height: 50vh;
+		top: 20vh;
+		left: 14vw;
 		background-color: #aaa;
 		border: 3px solid #44a;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		justify-content: space-evenly;
 		overflow: auto;
+		text-align: center;
+	}
+
+	#histSendGrid {
+		display: flex;
+	}
+}
+
+@media screen and (max-width: 480px) {
+	
+	.prompt {
+		width: 98vw;
+		height: 99vh;
+		top: 0vh;
+		left: 0vw;
 	}
 
 	.intro-grid {
@@ -296,11 +343,11 @@ body {
 		margin-right: 3vw;
 	}
 
-	.mainBtn:not(:last-child) {
+	#datosBtnRow .mainBtn:not(:last-child) {
 		display: none;
 	}
 
-	.navMenu {
+	#responsive {
 		display: block;
 	}
 
