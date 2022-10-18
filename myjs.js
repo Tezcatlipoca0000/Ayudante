@@ -200,6 +200,7 @@ const add = {
 				break;
 		}
 	},
+	// MOVE THIS TO DATOS
 	'class': (str) => {
 		let x = Array.from(document.querySelectorAll('.mainBtn')).slice(0,-1);
 		let y = document.querySelector('.mainBtn:last-child');
@@ -525,8 +526,8 @@ const keys = {
 	'percent': ['margen', 'margenAnt', 'margenB'],
 	'datosKeys': ['registro', 'producto', 'subtotal', 'unitario', 'iva', 'ieps', 'total', 'publico', 'margen', 'utilidadUnitaria', 'utilidadPedido', 'piezas', 'revCostos', 'revPrecios', 'claveProv', 'barras', 'claveFuentes', 'biblia', 'diferenciaB', 'margenB'],
 	'datosHeaders': ['No. Registro', 'Producto', 'Subtotal', 'Costo Unitario', 'Iva', 'Ieps', 'Total', 'Precio al Público', 'Margen', 'Utilidad Unitaria', 'Utilidad por Pedido', 'Piezas', 'Última rev. Costos', 'Última rev. Precios', 'Clave Provedor', 'Código de Barras', 'Código Super Fuentes', 'Biblia', 'Diferencia B', 'Margen B'],
-	'datosCostos': ['Producto', 'Subtotal', 'Costo Unitario', 'Total', 'Última rev. Costos', 'Clave Provedor', 'Código de Barras', 'Código Super Fuentes', 'Biblia', 'Diferencia B'],
-	'datosPrecios': ['Producto', 'Costo Unitario', 'Precio al Público', 'Margen', 'Última rev. Precios', 'Código de Barras', 'Código Super Fuentes', 'Biblia', 'Diferencia B'],
+	'datosCostos': ['No. Registro', 'Producto', 'Subtotal', 'Costo Unitario', 'Total', 'Última rev. Costos', 'Clave Provedor', 'Código de Barras', 'Código Super Fuentes', 'Biblia', 'Diferencia B'],
+	'datosPrecios': ['No. Registro', 'Producto', 'Costo Unitario', 'Precio al Público', 'Margen', 'Última rev. Precios', 'Código de Barras', 'Código Super Fuentes', 'Biblia', 'Diferencia B'],
 	'datosAumentos': ['Producto', 'Costo Unitario', 'Precio al Público', 'Margen', 'Diferencia B'],
 	'datosBiblia': ['Producto', 'Biblia', 'Precio al Público', 'Margen B'],
 	'uniqueProv': () => {
@@ -537,12 +538,6 @@ const keys = {
 		return [...new Set(provedoresList)];
 	},
 	'pedidoHeaders': ['Producto', 'Límite', 'Pedido', 'Total'],
-	'datosModel': () => {
-		let x = {};
-		for (let i of keys.datosKeys) x[i] = '';
-		return x;
-	},
-	'pedidoModel': { producto:'', limite:'', pedido:'', total:'' },
 };
 
 // ********  SITE  *********
@@ -717,7 +712,7 @@ const datos = {
 		add.el('button', q2, 'Agregar', [['class', 'mainBtn']], [['click', datos.newMenu]]);
 		add.el('button', q2, 'Eliminar', [['class', 'mainBtn']], [['click', datos.removeMenu]]);
 		add.el('button', q2, 'Imprimir', [['class', 'mainBtn']], [['click', datos.print]]);
-		add.el('button', q2, 'Mostrar Opciones', [['class', 'mainBtn navMenu']], [['click', ()=>add.class('mainBtnResp')]]);
+		add.el('button', q2, 'Mostrar Opciones', [['class', 'mainBtn invisible'], ['id', 'responsive']], [['click', ()=>add.class('mainBtnResp')]]);
 		add.el('table', q, '', [['class', 'table'], ['id', 'datosTable']]);
 		add.el('thead', q3, '', [['id', 'datosThead']]);
 		add.el('tbody', q3, '', [['id', 'datosTbody']]);
@@ -1402,6 +1397,8 @@ add.listener(document,
 /*
 
 					*************************
+
+-- REMOVE (in touch devices)|| MAKE RESPONSIVE the question-icon			
 
 -- DATOS > filtrar x filas > clave provedor = insertar un question icon(title: separar las claves con un espacio)
 -- DATOS > filtrar x filas > clave provedor = cambiar placeholder(clave(s) de prov.) 
