@@ -442,7 +442,7 @@ const save = {
 			cant = [],
 			prod = [],
 			tot = [],
-			prov = disp.state,
+			prov = main.prov,
 			today = add.date();
 		pedido.forEach(n => {
 			cant.push(n.innerText);
@@ -475,7 +475,7 @@ class Reg {
 			uu = calc.sub([arr[5], Number(uni.replace('$', ''))]),
 			up = calc.mult([arr[6], Number(uu.replace('$', ''))]);
 		this.registro = arr[0];
-		this.provedor = disp.state; 
+		this.provedor = main.prov; 
 		this.producto = arr[1];
 		this.subtotal = `$${arr[2].toFixed(2)}`;
 		this.unitario = uni;
@@ -542,11 +542,25 @@ const keys = {
 
 // ********  SITE  *********
 
+const cobrar = {
+	table: () => {
+		console.log('heyyyy', main.prov);
+		let table = document.querySelector('.table'),
+			mainBtnRow = document.querySelector('.mainBtnRow');
+		if (table) table.remove();
+		if (mainBtnRow) mainBtnRow.remove();
+		add.el('div', '#main', '', [['class', 'cobrarBG']]);
+		add.el('div', '.cobrarBG', '', [['class', 'cobrarINPUT']]);
+		add.el('label', '.cobrarINPUT', 'Código del producto:');
+		add.el('input', '.cobrarINPUT');
+	},
+};
+
 const hist = {
 	table: () => {
 		let table = document.querySelector('.table'),
 			mainBtnRow = document.querySelector('.mainBtnRow'),
-			data = db.state[db.state.length-1].historial[disp.state];
+			data = db.state[db.state.length-1].historial[main.prov];
 		if (table) table.remove();
 		if (mainBtnRow) mainBtnRow.remove();
 		add.el('table', '#main', '', [['class', 'table'], ['id', 'historialTable']]);
@@ -666,7 +680,7 @@ const pedido = {
 		add.el('tr', '#pedidoThead', '', [['id', 'pedidoHead']]);
 		for (let i of h) add.el('th', '#pedidoHead', i);
 		for (let [i, n] of db.state.entries()) {
-			if (n.provedor === disp.state) {	
+			if (n.provedor === main.prov) {	
 				add.el('tr', '#pedidoTbody', '', [['id', 'pedidoTr' + i], ['data-registro', n.registro]]);
 				add.el('td', `#pedidoTr${i}`, n.producto, [['class', 'noteditable'], ['data-col', 'producto']]);
 				add.el('td', `#pedidoTr${i}`, n.limite === undefined ? '' : n.limite, [['class', 'contenteditable'], ['contenteditable', 'true'], ['data-col', 'limite']]);
@@ -729,7 +743,7 @@ const datos = {
 		}
 		add.icons('.svg-container-datos');
 		for (let [i, n] of db.state.entries()) {
-			if (n.provedor === disp.state) {	
+			if (n.provedor === main.prov) {	
 				add.el('tr', '#datosTbody', '', [['id', 'datosTr' + i], ['class', 'datosTr'], ['data-registro', n.registro]]);
 				for (let j of k) {
 					switch(j) {
@@ -878,7 +892,7 @@ const datos = {
 			max,
 			x = []; 
 		for (let i of db.state) {
-			if (i.provedor === disp.state) x.push(i.registro)
+			if (i.provedor === main.prov) x.push(i.registro)
 		}
 		min = Number(x[0]);
 		max = Number(x[x.length-1]) + 1;
@@ -1041,21 +1055,11 @@ const datos = {
 
 const main = {
 	'state': '',
-	'list': (evt) => {
-		document.querySelector('#main').innerHTML = '';
-		main.state = evt.target.id;
-		add.el('select', '#main', '', [['class', 'mainSelect']], [['change', main.disp]]);
-		add.el('option', '.mainSelect', '--Provedor--', [['selected', 'true']]);
-		for (let i of keys.uniqueProv()) {
-			add.el('option', '.mainSelect', i, [['value', i]]);
-		}
-	},
+	'prov': '',
 	'disp': (evt) => {
 		let table = document.querySelector('.table'),
-			mainBtnRow = document.querySelector('.mainBtnRow'),
-			select = document.querySelector('.mainSelect');
-		disp.state = evt.target.value;
-		select.blur();
+			mainBtnRow = document.querySelector('.mainBtnRow');
+		main.prov = evt.target.value;
 		if (table) table.remove();
 		if (mainBtnRow) mainBtnRow.remove();
 		switch(main.state) {
@@ -1063,6 +1067,7 @@ const main = {
 				pedido.table(keys.pedidoHeaders);
 				break;
 			case 'navRecibir':
+				// TO DO
 				break;
 			case 'navDatos':
 				datos.table(keys.datosHeaders, keys.datosKeys);
@@ -1071,16 +1076,12 @@ const main = {
 				hist.table();
 				break;
 			case 'navCobrar':
+				cobrar.table()
 				break;
 			default:
 				break;
 		}
 	},
-}
-
-// TODO move this to another object 
-const disp = {
-	state: ''
 }
 
 const db = {
@@ -1136,13 +1137,6 @@ const db = {
 		y.removeAttribute('disabled');
 		z.setAttribute('style', 'background-color:green;');
 	},
-	'next': () => {
-		document.querySelector('.prompt').remove();
-		let links = document.querySelectorAll('.navLink');
-		for (let i of links) {
-			add.listener(i, [['click', main.list]]);
-		}
-	},
 	'sort': () => {
 		db.state.sort((a, b) => {
 			return Number(a.registro) - Number(b.registro);
@@ -1170,7 +1164,7 @@ const intro = {
 		add.el('input', q3, '', [['type', 'file'], ['id', 'dbFile']], [['change', () => db.load('dbFile')]]);
 		add.el('div', q1, 'Datos: ', [['class', 'p2']]);
 		add.el('span', q2, state, [['class', 'estado']]);
-		add.el('button', q2, 'Continuar', [['id', 'introNext']], [['click', db.next]]);
+		add.el('button', q2, 'Continuar', [['id', 'introNext']], [['click', () => document.querySelector('.prompt').remove()]]);
 		add.el('div', q1, '', [['class', 'intro-flex']]);
 		add.el('div', '.intro-flex', '', [['id', 'intro-flex-1']]);
 		add.el('button', '#intro-flex-1', 'Guardar datos en el servidor', [['id', 'introSavePost']], [['click', save.promptPost]]);
@@ -1234,6 +1228,22 @@ add.listener(document,
 	[
 		['DOMContentLoaded', standBy.display],
 		['click', (evt) => {
+			// NAV MENU
+				let link = evt.target.closest('.navLink');
+				if (link) {
+					main.state = link.id;
+					document.querySelector('#main').innerHTML = '';
+					if (link.id === 'navCobrar') {
+						main.disp(evt)
+					}
+					else {
+						add.el('select', '#main', '', [['class', 'mainSelect']], [['change', main.disp]]);
+						add.el('option', '.mainSelect', '--Provedor--', [['selected', 'true']]);
+						for (let i of keys.uniqueProv()) {
+							add.el('option', '.mainSelect', i, [['value', i]]);
+						}
+					}
+				}
 			// ALL >>>> add selection to td
 			let td = evt.target.closest('td[contenteditable]');
 			if (td) {
@@ -1403,11 +1413,6 @@ add.listener(document,
 -- DATOS > filtrar x filas > clave provedor = insertar un question icon(title: separar las claves con un espacio)
 -- DATOS > filtrar x filas > clave provedor = cambiar placeholder(clave(s) de prov.) 
 -- DATOS > filtrar x filas > clave provedor = notificar cuando una clave no existe prompt create? or disregard?
-
--- display = make responsive !
-
--- DATOS > td[contenteditable] = aceptar signo "=" para vincular info con otra td (='#reg')
--- DATOS > filtrar x col = añadir la col del reg para los botones de "accessos rápidos" por defecto
 
 -- MAYBE -- COMPARATOR = construir un comparador de costos (mi tienda, soriana, heb, walmart) (SERVER)
 -- MAYBE -- ACTIONS RECTANGLE = shows possible key actions depending on the main.state

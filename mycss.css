@@ -138,11 +138,6 @@ label {
 	width: 100%;
 }
 
-.main {
-	width: 100vw;
-	height: 100vh;
-}
-
 .main .mainSelect {
 	margin: 5vh 1vw;
 }
@@ -257,6 +252,27 @@ label {
 
 .invisible {
 	display: none;
+}
+
+.cobrarBG {
+	margin: 2vmin;
+	background-color: rgb(179, 179, 179);
+	width: 95vw;
+	min-height: 78vh;
+	max-height: auto;
+}
+
+.cobrarINPUT {
+	background-image: linear-gradient(to right, rgba(170, 204, 255, 1), rgba(170, 204, 255, 0.1));
+	width: 96%;
+	height: 15vh;
+	position: relative;
+	top: 5vmin;
+	left: 2%;
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	
 }
 
 @media screen and (max-width: 768px) {
