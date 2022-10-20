@@ -481,7 +481,6 @@ class Reg {
 		this.unitario = uni;
 		this.iva = `$${arr[3].toFixed(2)}`;
 		this.ieps = `$${arr[4].toFixed(2)}`;
-		this.descuento = '--'; //
 		this.total = tot;
 		this.publico = `$${arr[5].toFixed(2)}`;
 		this.margen = mar;
@@ -520,8 +519,8 @@ const IVA = 0.16,
 	IEPS = 0.08;
 
 const keys = {
-	'all': ['registro', 'provedor', 'producto', 'subtotal', 'unitario', 'iva', 'ieps', 'descuento', 'total', 'publico', 'margen', 'utilidadUnitaria', 'utilidadPedido', 'piezas', 'costosAnt', 'diferenciaC', 'margenAnt', 'diferenciaM', 'revCostos', 'revPrecios', 'claveProv', 'barras', 'claveFuentes', 'biblia', 'diferenciaB', 'margenB'],
-	'money': ['subtotal', 'unitario', 'iva', 'ieps', 'descuento', 'total', 'publico', 'utilidadUnitaria', 'utilidadPedido', 'costosAnt', 'diferenciaC', 'biblia', 'diferenciaB',],
+	'all': ['registro', 'provedor', 'producto', 'subtotal', 'unitario', 'iva', 'ieps', 'total', 'publico', 'margen', 'utilidadUnitaria', 'utilidadPedido', 'piezas', 'costosAnt', 'diferenciaC', 'margenAnt', 'diferenciaM', 'revCostos', 'revPrecios', 'claveProv', 'barras', 'claveFuentes', 'biblia', 'diferenciaB', 'margenB'],
+	'money': ['subtotal', 'unitario', 'iva', 'ieps', 'total', 'publico', 'utilidadUnitaria', 'utilidadPedido', 'costosAnt', 'diferenciaC', 'biblia', 'diferenciaB',],
 	'money2': ['subtotal', 'unitario', 'iva', 'ieps', 'total', 'publico', 'utilidadUnitaria', 'utilidadPedido', 'biblia', 'diferenciaB',],
 	'percent': ['margen', 'margenAnt', 'margenB'],
 	'datosKeys': ['registro', 'producto', 'subtotal', 'unitario', 'iva', 'ieps', 'total', 'publico', 'margen', 'utilidadUnitaria', 'utilidadPedido', 'piezas', 'revCostos', 'revPrecios', 'claveProv', 'barras', 'claveFuentes', 'biblia', 'diferenciaB', 'margenB'],
