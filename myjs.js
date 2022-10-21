@@ -562,6 +562,7 @@ const hist = {
 			data = db.state[db.state.length-1].historial[main.prov];
 		if (table) table.remove();
 		if (mainBtnRow) mainBtnRow.remove();
+		if (!data) return;
 		add.el('table', '#main', '', [['class', 'table'], ['id', 'historialTable']]);
 		add.el('thead', '#historialTable', '', [['id', 'historialThead']]);
 		add.el('tbody', '#historialTable', '', [['id', 'historialTbody']]);
@@ -1407,6 +1408,7 @@ add.listener(document,
 
 					*************************
 
+-- ISSUE = if input is too fast it won't save to db (change input logic maybe not use a timeout?)
 -- REMOVE (in touch devices)|| MAKE RESPONSIVE the question-icon			
 
 -- DATOS > filtrar x filas > clave provedor = insertar un question icon(title: separar las claves con un espacio)
