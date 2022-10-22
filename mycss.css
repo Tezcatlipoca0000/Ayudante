@@ -50,6 +50,34 @@ label {
   }
 }
 
+.serverInput {
+	height: 17vh;
+	width: 40vw;
+	background-color: #ddd;
+	color: black;
+	border: 2px solid #ccc;
+	padding: 10px;
+	position: fixed;
+	top: 40vh;
+	left: 26vw;
+	font-size: 1rem;
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	grid-template-rows: repeat(2, 1fr);
+	gap: 10px;
+	align-items: center;
+}
+
+.serverInput input {
+	height: 40%;
+	width: 90%;
+}
+
+.serverInput button {
+	height: 60%;
+	width: 60%;
+}
+
 .title {
 	text-align: center;
 }
