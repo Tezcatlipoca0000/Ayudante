@@ -1197,9 +1197,15 @@ const connect = {
 		add.listener(xhr, [['load', connect.ready], ['error', connect.error]])
 		xhr.open('GET', url);
 		xhr.setRequestHeader('Bypass-Tunnel-Reminder', 'True');
+		xhr.setRequestHeader('Ayudante', 'True');
 		xhr.send();
 	},
 	'ready': (evt) => {
+		if (evt.target.response === '') {
+			alert(`Error:${evt.target.statusText}\nFavor de intentarlo de nuevo.`);
+			standBy.display();
+			return;
+		}
 		add.cancel('.standBy');
 		let dataLoad = evt.target.response,
 			dataParsed = JSON.parse(dataLoad);
@@ -1216,6 +1222,10 @@ const connect = {
 const standBy = {
 	'display': () => {
 		window.scrollTo(0,0);
+		let x = document.querySelector('.standBy'),
+			y = document.querySelector('.serverInput');
+		if (x) add.cancel('.standBy');
+		if (y) add.cancel('.serverInput');
 		add.el('div', 'body', null, [['class', 'standBy']]);
 		add.el('span', '.standBy', 'Conectando ');
 		add.el('i', '.standBy', null, [['class', 'spinner']]);
