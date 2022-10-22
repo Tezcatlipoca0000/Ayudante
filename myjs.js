@@ -1192,10 +1192,11 @@ const intro = {
 };
 
 const connect = {
-	'server': () => {
+	'server': (url) => {
 		let xhr = new XMLHttpRequest();
 		add.listener(xhr, [['load', connect.ready], ['error', connect.error]])
-		xhr.open('GET', 'http://localhost:8000');
+		xhr.open('GET', url);
+		xhr.setRequestHeader('Bypass-Tunnel-Reminder', 'True');
 		xhr.send();
 	},
 	'ready': (evt) => {
@@ -1218,7 +1219,19 @@ const standBy = {
 		add.el('div', 'body', null, [['class', 'standBy']]);
 		add.el('span', '.standBy', 'Conectando ');
 		add.el('i', '.standBy', null, [['class', 'spinner']]);
-		connect.server();
+		add.el('div', '.standBy', '', [['class', 'serverInput']]);
+		add.el('label', '.serverInput', 'Escribe la dirección del servidor: ');
+		add.el('input', '.serverInput', '', [['id', 'serverInput']]);
+		add.el('button', '.serverInput', 'Cancelar', null, [['click', () => {
+			add.cancel('.serverInput');
+			add.cancel('.standBy');
+			intro.disp();
+		}]]);
+		add.el('button', '.serverInput', 'Aceptar', null, [['click', () => {
+			let x = document.querySelector('#serverInput');
+			connect.server(x.value);
+			add.cancel('.serverInput')
+		}]])
 	},
 };
 
