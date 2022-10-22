@@ -7,7 +7,7 @@ const headers = {
 	'Access-Control-Allow-Origin': '*',
 	'Access-Control-Allow-Methods': 'OPTIONS, POST, GET',
 	'Access-Control-Max-Age': 2592000,
-	'Access-Control-Allow-Headers': 'Content-Type'
+	'Access-Control-Allow-Headers': 'Content-Type, Bypass-Tunnel-Reminder',
 };
 const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
@@ -17,6 +17,25 @@ const transporter = nodemailer.createTransport({
 		pass: process.env.MAIL_PASS
 	}
 });
+const localtunnel = require('localtunnel');
+
+(async () => {
+	console.log('trying to get subdomain: ', process.env.SUB_NAME);
+	const tunnel = await localtunnel({port:8000, subdomain: process.env.SUB_NAME});
+	console.log('the tunnel url: ', tunnel.url);
+
+	tunnel.on('request', (info) => {
+		console.log('tunnel request: ', info);
+	});
+
+	tunnel.on('error', (err) => {
+		console.log('tunnel error:', err);
+	});
+
+	tunnel.on('close', () => {
+		console.log('tunnel closed');
+	});
+})();
 
 let data;
 fs.readFile(__dirname + "/datos.json", 'utf8', (err, contents) => {
