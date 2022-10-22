@@ -7,7 +7,7 @@ const headers = {
 	'Access-Control-Allow-Origin': '*',
 	'Access-Control-Allow-Methods': 'OPTIONS, POST, GET',
 	'Access-Control-Max-Age': 2592000,
-	'Access-Control-Allow-Headers': 'Content-Type, Bypass-Tunnel-Reminder',
+	'Access-Control-Allow-Headers': 'Content-Type, Bypass-Tunnel-Reminder, Ayudante'
 };
 const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
@@ -54,6 +54,10 @@ const requestListener = (req, res) => {
 	if (req.method === 'OPTIONS') {
 		res.writeHead(204, headers);
 		res.end();
+		return;
+	} else if (!req.headers.ayudante || req.headers.ayudante !== 'True') {
+		res.writeHead(403, headers);
+		res.end()
 		return;
 	} else if (req.method === 'GET') {
 		console.log('data fetched')
