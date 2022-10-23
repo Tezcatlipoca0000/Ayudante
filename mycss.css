@@ -305,6 +305,33 @@ label {
 
 @media screen and (max-width: 768px) {
 
+	.serverInput {
+		height: 70vh;
+		width: 70vw;
+		top: 15vh;
+		left: 15vw;
+		grid-template-rows: repeat(3, 1fr);
+		place-items: center;
+		padding: 0px;
+	}
+
+	.serverInput label {
+		grid-column-start: 1;
+		grid-column-end: 3;
+	}
+	
+	.serverInput input {
+		grid-column-start: 1;
+		grid-column-end: 3;
+		height: 30%;
+		width: 90%;
+	}
+	
+	.serverInput button {
+		height: 40%;
+		width: 70%;
+	}
+
 	.prompt {
 		width: 99vw;
 		height: 99vh;
@@ -356,6 +383,33 @@ label {
 }
 
 @media screen and (max-width: 480px) {
+
+	.serverInput {
+		height: 100vh;
+		width: 100vw;
+		top: 0vh;
+		left: 0vw;
+		grid-template-rows: repeat(3, 1fr);
+		place-items: center;
+		padding: 0px;
+	}
+
+	.serverInput label {
+		grid-column-start: 1;
+		grid-column-end: 3;
+	}
+	
+	.serverInput input {
+		grid-column-start: 1;
+		grid-column-end: 3;
+		height: 40%;
+		width: 90%;
+	}
+	
+	.serverInput button {
+		height: 50%;
+		width: 80%;
+	}
 	
 	.prompt {
 		width: 98vw;
