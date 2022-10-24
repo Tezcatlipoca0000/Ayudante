@@ -1196,7 +1196,6 @@ const connect = {
 		let xhr = new XMLHttpRequest();
 		add.listener(xhr, [['load', connect.ready], ['error', connect.error]])
 		xhr.open('GET', 'http://192.168.1.131:80');
-		xhr.setRequestHeader('Bypass-Tunnel-Reminder', 'True');
 		xhr.setRequestHeader('Ayudante', 'True');
 		xhr.send();
 	},

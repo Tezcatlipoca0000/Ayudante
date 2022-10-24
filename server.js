@@ -7,7 +7,7 @@ const headers = {
 	'Access-Control-Allow-Origin': '*',
 	'Access-Control-Allow-Methods': 'OPTIONS, POST, GET',
 	'Access-Control-Max-Age': 2592000,
-	'Access-Control-Allow-Headers': 'Content-Type, Bypass-Tunnel-Reminder, Ayudante'
+	'Access-Control-Allow-Headers': 'Content-Type, Ayudante'
 };
 const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
