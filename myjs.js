@@ -1432,11 +1432,18 @@ add.listener(document,
 					*************************
 
 -- ISSUE = if input is too fast it won't save to db (change input logic maybe not use a timeout?)
--- REMOVE (in touch devices)|| MAKE RESPONSIVE the question-icon			
+-- BIG ISSUE = only one person can work at a time! since all db saves to the server, not only changes. Also there is no "merge" logic (keep highest val || or print a timestamp to each reg)in place >> MAYBE = keep state of changes (client) and write to db only where necesary (server)
+
+-- (in touch devices) > REMOVE || MAKE RESPONSIVE the question-icon			
 
 -- DATOS > filtrar x filas > clave provedor = insertar un question icon(title: separar las claves con un espacio)
 -- DATOS > filtrar x filas > clave provedor = cambiar placeholder(clave(s) de prov.) 
 -- DATOS > filtrar x filas > clave provedor = notificar cuando una clave no existe prompt create? or disregard?
+-- DATOS > filtrar x filas > MAYBE = agregar filtro por num de reg.
+-- DATOS > filtrar x filas > MAYBE = agregar filtro por nombre-de-producto. =~ (buscador)
+
+-- PROBABLY -- "NEW DB" BUTTON = at intro > build a new empty database
+-- PROBABLY -- "PROVEDORES" SECTION = to manage prov info (days, $, add new prov, delet prov)
 
 -- MAYBE -- COMPARATOR = construir un comparador de costos (mi tienda, soriana, heb, walmart) (SERVER)
 -- MAYBE -- ACTIONS RECTANGLE = shows possible key actions depending on the main.state
