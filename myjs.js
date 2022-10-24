@@ -1192,10 +1192,10 @@ const intro = {
 };
 
 const connect = {
-	'server': (url) => {
+	'server': () => {
 		let xhr = new XMLHttpRequest();
 		add.listener(xhr, [['load', connect.ready], ['error', connect.error]])
-		xhr.open('GET', url);
+		xhr.open('GET', 'http://localhost:80');
 		xhr.setRequestHeader('Bypass-Tunnel-Reminder', 'True');
 		xhr.setRequestHeader('Ayudante', 'True');
 		xhr.send();
@@ -1239,7 +1239,7 @@ const standBy = {
 		}]]);
 		add.el('button', '.serverInput', 'Aceptar', null, [['click', () => {
 			let x = document.querySelector('#serverInput');
-			connect.server(x.value);
+			connect.server();
 			add.cancel('.serverInput')
 		}]])
 	},

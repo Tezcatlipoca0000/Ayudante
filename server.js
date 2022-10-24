@@ -2,7 +2,7 @@ require('dotenv').config();
 const http = require('http');
 const fs = require('fs');
 const host = 'localhost';
-const port = 8000;
+const port = 80;
 const headers = {
 	'Access-Control-Allow-Origin': '*',
 	'Access-Control-Allow-Methods': 'OPTIONS, POST, GET',
@@ -17,7 +17,7 @@ const transporter = nodemailer.createTransport({
 		pass: process.env.MAIL_PASS
 	}
 });
-const localtunnel = require('localtunnel');
+/*const localtunnel = require('localtunnel');
 
 (async () => {
 	console.log('trying to get subdomain: ', process.env.SUB_NAME);
@@ -35,7 +35,7 @@ const localtunnel = require('localtunnel');
 	tunnel.on('close', () => {
 		console.log('tunnel closed');
 	});
-})();
+})();*/
 
 let data;
 fs.readFile(__dirname + "/datos.json", 'utf8', (err, contents) => {
