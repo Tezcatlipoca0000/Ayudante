@@ -739,13 +739,10 @@ const pedido = {
 			reg = row.dataset.registro,
 			input = td.innerText,
 			col = td.dataset.col;
-		if (globalTimeout) clearTimeout(globalTimeout);
-		globalTimeout = setTimeout(() => {
-			add.inputValidation(td);
-			update.db(reg, col, input);
-			update.row(td, row); 
-			update.col();
-		}, 500);				
+		add.inputValidation(td);
+		update.db(reg, col, input);
+		update.row(td, row); 
+		update.col();				
 	},
 };
 
@@ -813,13 +810,9 @@ const datos = {
 	// updates table & db
 	'update': (td) => {
 		let row = td.parentElement;
-		if (globalTimeout) clearTimeout(globalTimeout);
-		globalTimeout = setTimeout(() => {
-			add.inputValidation(td);
-			update.db(row.dataset.registro, td.dataset.col, td.innerText);
-			update.row(td, row);
-		}, 1000);
-
+		add.inputValidation(td);
+		update.db(row.dataset.registro, td.dataset.col, td.innerText);
+		update.row(td, row);
 	},
 	// toggles taxes on/off
 	'changeTax': (td) => {
@@ -1282,21 +1275,21 @@ add.listener(document,
 		['DOMContentLoaded', standBy.display],
 		['click', (evt) => {
 			// NAV MENU
-				let link = evt.target.closest('.navLink');
-				if (link) {
-					main.state = link.id;
-					document.querySelector('#main').innerHTML = '';
-					if (link.id === 'navCobrar' || link.id === 'navComparar') {
-						main.disp(evt)
-					}
-					else {
-						add.el('select', '#main', '', [['class', 'mainSelect']], [['change', main.disp]]);
-						add.el('option', '.mainSelect', '--Provedor--', [['selected', 'true']]);
-						for (let i of keys.uniqueProv()) {
-							add.el('option', '.mainSelect', i, [['value', i]]);
-						}
+			let link = evt.target.closest('.navLink');
+			if (link) {
+				main.state = link.id;
+				document.querySelector('#main').innerHTML = '';
+				if (link.id === 'navCobrar' || link.id === 'navComparar') {
+					main.disp(evt)
+				}
+				else {
+					add.el('select', '#main', '', [['class', 'mainSelect']], [['change', main.disp]]);
+					add.el('option', '.mainSelect', '--Provedor--', [['selected', 'true']]);
+					for (let i of keys.uniqueProv()) {
+						add.el('option', '.mainSelect', i, [['value', i]]);
 					}
 				}
+			}
 			// ALL >>>> add selection to td
 			let td = evt.target.closest('td[contenteditable]');
 			if (td) {
@@ -1311,26 +1304,47 @@ add.listener(document,
 				selection.removeAllRanges();
 				selection.addRange(range);
 			}
-			// DATOS >>>> sort th 
+			// DATOS  
 			if (main.state === 'navDatos') {
+				// >>>> sort th
 				let th = evt.target.closest('th');
-				if (!th) return;
-				add.sort(th);
+				if (th) {
+					add.sort(th);
+				}
+				// >>>> update row on btn click
+				let btn = evt.target.closest('button.mainBtn'),
+					td = document.querySelector('.selected');
+				if (btn && td) {
+					datos.update(td);
+				}
 			}
-
+			// PEDIDO >>>> update row on btn click
+			if (main.state === 'navPedido') {
+				let btn = evt.target.closest('button.mainBtn'),
+					td = document.querySelector('.selected');
+				if (btn && td) {
+					pedido.update(td);
+				}
+			}
 		}],
 		['input', (evt) => {
 			// DATOS >>>> update datos table && db 
 			if (main.state === 'navDatos') {
 				let td = evt.target.closest('td');
 				if (!td) return;
-				datos.update(td);
+				if (globalTimeout) clearTimeout(globalTimeout);
+				globalTimeout = setTimeout(() => {
+					datos.update(td);
+				}, 8000);
 			}
 			// PEDIDO >>>> update pedido table && db
 			if (main.state === 'navPedido') {
 				let td = evt.target.closest('td');
 				if (!td) return;
-				pedido.update(td);
+				if (globalTimeout) clearTimeout(globalTimeout);
+				globalTimeout = setTimeout(() => {
+					pedido.update(td);
+				}, 8000);
 			}
 		}],
 		['dblclick', (evt) => {
@@ -1454,12 +1468,35 @@ add.listener(document,
 				}
 			}
 		}],
+		['focusout', evt => {
+			if (main.state === 'navDatos') {
+				let td = evt.target.closest('td');
+				if (!td) return;
+				datos.update(td);
+			}
+			if (main.state === 'navPedido') {
+				let td = evt.target.closest('td');
+				if (!td) return;
+				pedido.update(td);
+			}
+		}],
 	]
 );
 
 /*
+				****************************
+				Look into (the unknown)
+
+-- Didn't save info on pedido check that
+
+
+
+*/
+
+/*
 
 					*************************
+					PENDING
 
 -- ISSUE = if input is too fast it won't save to db (change input logic maybe not use a timeout?)
 -- BIG ISSUE = only one person can work at a time! since all db saves to the server, not only changes. Also there is no "merge" logic (keep highest val || or print a timestamp to each reg)in place >> MAYBE = keep state of changes (client) and write to db only where necesary (server)
@@ -1475,11 +1512,31 @@ add.listener(document,
 -- PROBABLY -- "NEW DB" BUTTON = at intro > build a new empty database
 -- PROBABLY -- "PROVEDORES" SECTION = to manage prov info (days, $, add new prov, delet prov)
 
+-- TO DO -- save pedido in localstorage api every 5 min and clear it every 'save' btn click
+
 -- MAYBE -- COMPARATOR = construir un comparador de costos (mi tienda, soriana, heb, walmart) (SERVER)
 -- MAYBE -- ACTIONS RECTANGLE = shows possible key actions depending on the main.state
 
 -- PENDING -- COBRAR = dev
 
 					*************************
+
+*/
+
+/* 
+
+			************************************
+			I'm on it
+	
+ISSUE: INPUT LOGIC
+SOLUTION: have 3 ways to update row {
+	1.- like now is (on timeout): have the timeout set to 8 seconds and only if still on focus
+	2.- on blur: have it run on blur event
+	3.- on save: have it run when save btn is clicked
+}
+
+DEV: COMPARATOR
+PENDING: improve web crawling technique to a page that don't allow web crawling
+
 
 */
