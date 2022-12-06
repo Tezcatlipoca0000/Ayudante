@@ -541,6 +541,45 @@ const keys = {
 
 // ********  SITE  *********
 
+const compare = {
+	search: () => {
+		let table = document.querySelector('.table'),
+			mainBtnRow = document.querySelector('.mainBtnRow');
+		if (table) table.remove();
+		if (mainBtnRow) mainBtnRow.remove();
+		add.el('input', '#main', '', [['id', 'compareSearch']]);
+		add.el('button', '#main', 'Comparar', null, [['click', compare.lookup]])
+	},
+	lookup: () => {
+		let x = document.querySelector('#compareSearch'),
+			url = 'http://192.168.1.131:80/compare';
+		console.log('heyyy', x);
+		fetch(url, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'Ayudante': 'True',
+			},
+			referrerPolicy: 'no-referrer',
+			body: JSON.stringify({product: x.value}),
+		})
+		.then(response => response.json())
+		.then(data => {
+			console.log("Here's the server's response: ", data);
+			if (data.error) {
+				alert('Hubo un error y NO se envió la información. Porfavor vuelva a intentarlo.')
+			} else {
+				alert('¡Se envió la información éxitosamente!');
+				//add.cancel('#histSendMenu')
+			}
+		})
+		.catch((err) => {
+			console.error('There was an error making the connection to the server: ', err);
+			alert('Hubo un error estableciendo la conexión con el servidor. Porfavor vuelva a intentarlo.');
+		});
+	},
+};
+
 const cobrar = {
 	table: () => {
 		console.log('heyyyy', main.prov);
@@ -630,7 +669,7 @@ const hist = {
 	send: () => {
 		let addr = document.querySelector('#histSendGrid input').value,
 			tbl = document.querySelector('.menu .table'),
-			url = 'http://localhost:8000/send';
+			url = 'http://192.168.1.131:80/send';
 		add.el('div', 'body', null, [['class', 'invisible']]);
 		// make a table to send that excludes total row and col
 		add.el('table', '.invisible', null, [['id', 'sendTbl']]);
@@ -643,6 +682,7 @@ const hist = {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
+				'Ayudante': 'True',
 			},
 			referrerPolicy: 'no-referrer',
 			body: JSON.stringify({to: addr, html: document.querySelector('#sendTbl').outerHTML}),
@@ -1076,7 +1116,10 @@ const main = {
 				hist.table();
 				break;
 			case 'navCobrar':
-				cobrar.table()
+				cobrar.table();
+				break;
+			case 'navComparar':
+				compare.search();
 				break;
 			default:
 				break;
@@ -1243,7 +1286,7 @@ add.listener(document,
 				if (link) {
 					main.state = link.id;
 					document.querySelector('#main').innerHTML = '';
-					if (link.id === 'navCobrar') {
+					if (link.id === 'navCobrar' || link.id === 'navComparar') {
 						main.disp(evt)
 					}
 					else {
