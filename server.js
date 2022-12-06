@@ -17,6 +17,8 @@ const transporter = nodemailer.createTransport({
 		pass: process.env.MAIL_PASS
 	}
 });
+const puppeteer = require('puppeteer');
+const userAgent = require('user-agents');
 
 let data;
 fs.readFile(__dirname + "/datos.json", 'utf8', (err, contents) => {
@@ -81,6 +83,67 @@ const requestListener = (req, res) => {
 				}
 			});
 		});
+	} else if (req.method === 'POST' && req.url === '/compare') {
+		res.writeHead(200, headers);
+		let body = [];
+		req.on('data', d => {
+			body.push(d);
+		}).on('end', () => {
+			body = Buffer.concat(body).toString();
+			body = JSON.parse(body);
+			console.log('heyyyyy', body, body.product);
+			(async () => {
+				const browser = await puppeteer.launch({headless: false});
+				const page = await browser.newPage();
+				await page.setDefaultNavigationTimeout(0);
+				await page.setViewport({ width: 1280, height: 800 });
+				await page.setUserAgent(userAgent.random().toString());
+				await page.goto('https://www.soriana.com/');
+				await page.waitForSelector('body');
+				//const test2 = await page.$eval('body', el => el.outerHTML);
+				//console.log('uiiiiii', test2);
+
+				let searchBox = '#searchBtnTrack',
+					searchBtn = '.search-submit-cta',
+					prd = '.product';
+				await page.waitForSelector(searchBox);
+				const test4 = await page.$eval(searchBox, el => el.outerHTML);
+				console.log('test 444444', test4);
+				await page.type(searchBox, 'Aceite');
+				const test5 = await page.$eval(searchBtn, el => el.outerHTML);
+				console.log('test 555555', test5);
+				/*const [response] = await Promise.all([
+					page.waitForNavigation(),
+					page.click(searchBtn),
+				]);*/
+				await page.click(searchBtn);
+				await page.waitForSelector(prd);
+				const test6 = await page.$eval(prd, el => el.outerHTML);
+				console.log('test 666666', test6);
+				//await page.type(searchBox, 'Aceite');
+				//await page.click(searchBtn);
+				//await page.waitForSelector(prd);
+				//const test3 = await page.$eval(prd, el => el.outerHTML);
+				//console.log('testttt3', test3);
+
+				await browser.close();
+				//console.log('oiiiiiii', page);
+				/*let searchBox = 'input #searchBtnTrack',
+					searchBtn = 'button .d-flex .align-items-center .search-submit-cta',
+					prd = '.product';
+				await page.waitForSelector('input');
+				await page.type('input', 'Aceite');
+				await page.click(searchBtn);
+				
+				await page.waitForSelector(prd);
+				const test1 = await page.evaluate(prd => {
+					let x1 = document.querySelector(prd);
+					console.log('uuuuuuuuy', x1);
+					return x1;
+				}, prd);
+				console.log('finallll', test1);*/
+			})();
+		})
 	} else {
 		res.writeHead(405, headers);
 		res.end(`${req.method} is not allowed for the request.`);
