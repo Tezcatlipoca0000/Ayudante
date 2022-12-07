@@ -1485,21 +1485,10 @@ add.listener(document,
 );
 
 /*
-				****************************
-				Look into (the unknown)
-
--- Didn't save info on pedido check that
-
-
-
-*/
-
-/*
 
 					*************************
 					PENDING
 
--- ISSUE = if input is too fast it won't save to db (change input logic maybe not use a timeout?)
 -- BIG ISSUE = only one person can work at a time! since all db saves to the server, not only changes. Also there is no "merge" logic (keep highest val || or print a timestamp to each reg)in place >> MAYBE = keep state of changes (client) and write to db only where necesary (server)
 
 -- (in touch devices) > REMOVE || MAKE RESPONSIVE the question-icon			
@@ -1528,13 +1517,6 @@ add.listener(document,
 
 			************************************
 			I'm on it
-	
-ISSUE: INPUT LOGIC
-SOLUTION: have 3 ways to update row {
-	1.- like now is (on timeout): have the timeout set to 8 seconds and only if still on focus
-	2.- on blur: have it run on blur event
-	3.- on save: have it run when save btn is clicked
-}
 
 DEV: COMPARATOR
 PENDING: improve web crawling technique to a page that don't allow web crawling
