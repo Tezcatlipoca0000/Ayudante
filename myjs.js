@@ -399,9 +399,10 @@ const save = {
 			save.origin = 'backup';
 		}
 		let xhr = new XMLHttpRequest(),
-			url = 'http://localhost:8000';
+			url = 'http://192.168.1.131:80';
 		xhr.open('POST', url);
 		xhr.setRequestHeader('Content-Type', 'application/json');
+		xhr.setRequestHeader('Ayudante', 'True');
 		add.listener(xhr, [['error', save.postErr], ['load', save.postSuccess]]);
 		xhr.send(JSON.stringify(data));
 	},
