@@ -1489,6 +1489,8 @@ add.listener(document,
 					*************************
 					PENDING
 
+-- ISSUE = date shouldn't update when navigating left or right with crtl + arrow in navDatos (enter)
+
 -- BIG ISSUE = only one person can work at a time! since all db saves to the server, not only changes. Also there is no "merge" logic (keep highest val || or print a timestamp to each reg)in place >> MAYBE = keep state of changes (client) and write to db only where necesary (server)
 
 -- (in touch devices) > REMOVE || MAKE RESPONSIVE the question-icon			
