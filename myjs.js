@@ -1520,6 +1520,17 @@ add.listener(document,
 			************************************
 			I'm on it
 
+ISSUE: dates update
+SOLUTION: {
+	1.- make a db.hist obj that holds a copy of db on the begining
+	2.- update.datos accept a date param
+	3.- ctrl + entr flags date=True (no one else)
+	4.- on update.db {
+		a.- pass date param
+		b.- if !date compare state to hist. if !== then date=True
+	}
+}
+
 DEV: COMPARATOR
 PENDING: improve web crawling technique to a page that don't allow web crawling
 
