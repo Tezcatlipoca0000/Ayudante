@@ -247,9 +247,7 @@ const calc = {
 const update = {
 	// updates db when changes has been made
 	'db': (reg, col, txt, date = false) => {
-		console.log('the date param ', date);
-		backUp = db.hist.filter(n => n.registro == reg)
-		console.log('the backUp ', backUp);
+		backUp = ((db.hist.filter(n => n.registro == reg))[0])[col]
 		db.state = db.state.map(n => {
 			if (n.registro === reg) {
 				if (col === 'iva') {
@@ -259,6 +257,7 @@ const update = {
 				} else {
 					n[col] = txt;
 				}
+				if (n[col] !== backUp) date = true;
 				switch(col) {
 					case 'subtotal': case 'iva': case 'ieps': case 'piezas':
 						// iva ieps total uni margen utu utp revC difB
@@ -270,7 +269,7 @@ const update = {
 						n.margenB = calc.margen([Number(n.publico.replace('$', '')), Number(n.biblia.replace('$', ''))]);
 						n.utilidadUnitaria = calc.sub([Number(n.publico.replace('$', '')), Number(n.unitario.replace('$', ''))]);
 						n.utilidadPedido = calc.mult([Number(n.piezas), Number(n.utilidadUnitaria.replace('$', ''))]);
-						n.revCostos = add.date();
+						n.revCostos = date ? add.date() : n.revCostos;
 						n.diferenciaB = calc.sub([Number(n.unitario.replace('$', '')), Number(n.biblia.replace('$', ''))]);
 						break;
 					case 'publico':
@@ -279,7 +278,7 @@ const update = {
 						n.margenB = calc.margen([Number(n.publico.replace('$', '')), Number(n.biblia.replace('$', ''))]);
 						n.utilidadUnitaria = calc.sub([Number(n.publico.replace('$', '')), Number(n.unitario.replace('$', ''))]);
 						n.utilidadPedido = calc.mult([Number(n.piezas), Number(n.utilidadUnitaria.replace('$', ''))]);
-						n.revPrecios = add.date();
+						n.revPrecios = date ? add.date() : n.revPrecios;
 						break;
 					case 'biblia':
 						// difB
@@ -1495,8 +1494,6 @@ add.listener(document,
 					*************************
 					PENDING
 
--- ISSUE = date shouldn't update when navigating left or right with crtl + arrow in navDatos (enter)
-
 -- BIG ISSUE = only one person can work at a time! since all db saves to the server, not only changes. Also there is no "merge" logic (keep highest val || or print a timestamp to each reg)in place >> MAYBE = keep state of changes (client) and write to db only where necesary (server)
 
 -- (in touch devices) > REMOVE || MAKE RESPONSIVE the question-icon			
@@ -1508,9 +1505,9 @@ add.listener(document,
 -- DATOS > filtrar x filas > MAYBE = agregar filtro por nombre-de-producto. =~ (buscador)
 
 -- PROBABLY -- "NEW DB" BUTTON = at intro > build a new empty database
--- PROBABLY -- "PROVEDORES" SECTION = to manage prov info (days, $, add new prov, delet prov)
+-- PROBABLY -- "PROVEDORES" SECTION = to manage prov info (days, $, add new prov, delet prov, change reg's)
 
--- TO DO -- save pedido in localstorage api every 5 min and clear it every 'save' btn click
+-- TO DO -- save pedido in localstorage api every 5 min | every change in value and clear it every 'save' btn click
 
 -- MAYBE -- COMPARATOR = construir un comparador de costos (mi tienda, soriana, heb, walmart) (SERVER)
 -- MAYBE -- ACTIONS RECTANGLE = shows possible key actions depending on the main.state
@@ -1525,18 +1522,6 @@ add.listener(document,
 
 			************************************
 			I'm on it
-
-ISSUE: dates update
-EXPLANATION: The problem exist because of the new focusout event listener that updates on focus out
-SOLUTION: {
-	1.- make a db.hist obj that holds a copy of db on the begining
-	2.- update.datos accept a date param
-	3.- ctrl + entr flags date=True (no one else)
-	4.- on update.db {
-		a.- pass date param
-		b.- if !date compare state to hist. if !== then date=True
-	}
-}
 
 DEV: COMPARATOR
 PENDING: improve web crawling technique to a page that don't allow web crawling
