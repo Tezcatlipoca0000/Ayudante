@@ -147,11 +147,11 @@ const add = {
 			re5 = /^=\d+$/,
 			txt = target.innerText,
 			col = target.dataset.col,
-			tst1 = re1.test(txt),
-			tst2 = re2.test(txt),
-			tst3 = re3.test(txt),
-			tst4 = re4.test(txt),
-			tst5 = re5.test(txt);
+			tst1 = re1.test(txt), 
+			tst2 = re2.test(txt), 
+			tst3 = re3.test(txt), 
+			tst4 = re4.test(txt), 
+			tst5 = re5.test(txt); // referer test
 		switch (col) {
 			case 'subtotal': case 'publico': case 'biblia': // inforce correct format (ex. $10.00)
 			let reg = target.parentElement.dataset.registro;
@@ -246,7 +246,10 @@ const calc = {
 
 const update = {
 	// updates db when changes has been made
-	'db': (reg, col, txt) => {
+	'db': (reg, col, txt, date = false) => {
+		console.log('the date param ', date);
+		backUp = db.hist.filter(n => n.registro == reg)
+		console.log('the backUp ', backUp);
 		db.state = db.state.map(n => {
 			if (n.registro === reg) {
 				if (col === 'iva') {
@@ -1122,6 +1125,7 @@ const main = {
 }
 
 const db = {
+	'hist': {},
 	'state': {},
 	'origin': '',
 	'id': '',
@@ -1165,6 +1169,7 @@ const db = {
 		db.id === 'dbFile' ? db.continue(data) : save.post(data);
 	},
 	'continue': (data) => {
+		db.hist = data; // a history object created on the begining to compare on update
 		db.state = data;
 		db.origin = 'LOCAL';
 		let x = document.querySelector('.estado'),
@@ -1245,6 +1250,7 @@ const connect = {
 		add.cancel('.standBy');
 		let dataLoad = evt.target.response,
 			dataParsed = JSON.parse(dataLoad);
+		db.hist = dataParsed; // a history object created on the begining to compare on update
 		db.state = dataParsed;
 		db.origin = 'SERVER';
 		intro.disp();
@@ -1457,7 +1463,7 @@ add.listener(document,
 				if (main.state === 'navDatos' && evt.key === 'Enter' && evt.ctrlKey) {
 					// update subtotal || publico date with ctrl + enter
 					if (sel.dataset.col === 'subtotal' || sel.dataset.col === 'publico') {
-						update.db(sel.parentElement.dataset.registro, sel.dataset.col, sel.innerText);
+						update.db(sel.parentElement.dataset.registro, sel.dataset.col, sel.innerText, true);
 						update.row(sel, sel.parentElement);
 					}
 				}
@@ -1521,6 +1527,7 @@ add.listener(document,
 			I'm on it
 
 ISSUE: dates update
+EXPLANATION: The problem exist because of the new focusout event listener that updates on focus out
 SOLUTION: {
 	1.- make a db.hist obj that holds a copy of db on the begining
 	2.- update.datos accept a date param
